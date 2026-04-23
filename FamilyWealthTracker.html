@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Wealth Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:        #0d1117;
+  --bg2:       #161b22;
+  --bg3:       #1c2128;
+  --bg4:       #21262d;
+  --border:    #30363d;
+  --text:      #e6edf3;
+  --text2:     #8b949e;
+  --text3:     #6e7681;
+  --gold:      #d4af37;
+  --gold2:     #e8c84a;
+  --green:     #3fb950;
+  --red:       #f85149;
+  --blue:      #58a6ff;
+  --purple:    #bc8cff;
+  --orange:    #ffa657;
+  --sidebar-w: 240px;
+  --radius:    8px;
+  --radius-lg: 14px;
+  --font-d:    'Playfair Display', Georgia, serif;
+  --font-b:    'IBM Plex Sans', system-ui, sans-serif;
+  --font-m:    'IBM Plex Mono', 'Courier New', monospace;
+  --transition: 0.18s ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+a { color: var(--gold); text-decoration: none; }
+input, select, textarea, button { font-family: inherit; font-size: inherit; }
+
+/* Typography */
+h1, h2, h3 { font-family: var(--font-d); font-weight: 600; }
+h1 { font-size: 1.7rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+.mono { font-family: var(--font-m); }
+.text-gold  { color: var(--gold); }
+.text-green { color: var(--green); }
+.text-red   { color: var(--red); }
+.text-muted { color: var(--text3); }
+.text-secondary { color: var(--text2); }
+.text-sm  { font-size: 0.8rem; }
+.text-xs  { font-size: 0.72rem; }
+.text-lg  { font-size: 1.1rem; }
+.bold     { font-weight: 600; }
+.italic   { font-style: italic; }
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 16px; }
+.mb-4 { margin-bottom: 24px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 16px; }
+
+/* Layout */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#main {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 24px;
+}
+
+/* Sidebar */
+.sidebar-brand {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-brand .brand-title {
+  font-family: var(--font-d);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.2;
+}
+.sidebar-brand .brand-sub {
+  font-size: 0.7rem;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.sidebar-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 14px 16px 6px;
+}
+.member-list { padding: 0 8px; }
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+  position: relative;
+}
+.member-item:hover { background: var(--bg4); }
+.member-item.active { background: var(--bg4); }
+.member-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--gold);
+}
+.member-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.75rem;
+  color: #0d1117;
+  flex-shrink: 0;
+}
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-nw   { font-size: 0.7rem; color: var(--text3); font-family: var(--font-m); }
+.member-edit-btn {
+  opacity: 0;
+  background: none; border: none;
+  color: var(--text3); cursor: pointer;
+  padding: 2px 4px; border-radius: 4px;
+  transition: opacity var(--transition), color var(--transition);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.member-item:hover .member-edit-btn { opacity: 1; }
+.member-edit-btn:hover { color: var(--gold); }
+
+/* Nav */
+.nav-list { padding: 4px 8px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--text2);
+  transition: background var(--transition), color var(--transition);
+  user-select: none;
+}
+.nav-item:hover { background: var(--bg4); color: var(--text); }
+.nav-item.active { background: var(--bg4); color: var(--gold); }
+.nav-icon { width: 16px; text-align: center; flex-shrink: 0; }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 8px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--gold); color: #0d1117; border-color: var(--gold);
+}
+.btn-primary:hover { background: var(--gold2); border-color: var(--gold2); }
+.btn-ghost {
+  background: transparent; color: var(--text2); border-color: var(--border);
+}
+.btn-ghost:hover { background: var(--bg4); color: var(--text); border-color: var(--text3); }
+.btn-danger {
+  background: transparent; color: var(--red); border-color: transparent;
+}
+.btn-danger:hover { background: rgba(248,81,73,0.1); border-color: var(--red); }
+.btn-icon {
+  padding: 4px 7px; font-size: 0.8rem; min-width: 28px;
+  background: transparent; color: var(--text3); border-color: transparent;
+}
+.btn-icon:hover { background: var(--bg4); color: var(--text); }
+.btn-gold-ghost {
+  background: transparent; color: var(--gold); border-color: var(--gold);
+}
+.btn-gold-ghost:hover { background: rgba(212,175,55,0.12); }
+.btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+.btn-full { width: 100%; }
+.btn-sidebar {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 7px 8px;
+  gap: 8px;
+  background: transparent; color: var(--text2); border: none;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+}
+.btn-sidebar:hover { background: var(--bg4); color: var(--text); }
+.btn-sidebar .nav-icon { width: 16px; }
+
+/* Cards */
+.card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.card-sm { padding: 14px 16px; }
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title { font-family: var(--font-d); font-size: 0.95rem; font-weight: 600; }
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.stat-label { font-size: 0.72rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.stat-value { font-family: var(--font-m); font-size: 1.25rem; font-weight: 500; color: var(--text); }
+.stat-value.big { font-size: 1.6rem; color: var(--gold); }
+.stat-sub { font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
+
+/* Section header */
+.view-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.view-title { font-family: var(--font-d); font-size: 1.4rem; }
+.view-actions { display: flex; gap: 8px; align-items: center; }
+
+/* Table */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+.holdings-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.holdings-table thead { background: var(--bg3); }
+.holdings-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.holdings-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.holdings-table tbody tr:last-child td { border-bottom: none; }
+.holdings-table tbody tr { background: var(--bg); transition: background var(--transition); }
+.holdings-table tbody tr:hover { background: var(--bg3); }
+.holdings-table .num { text-align: right; font-family: var(--font-m); }
+.holdings-table .actions { text-align: right; white-space: nowrap; }
+.ticker-badge {
+  display: inline-block;
+  background: var(--bg4); border: 1px solid var(--border);
+  border-radius: 4px; padding: 2px 6px;
+  font-family: var(--font-m); font-size: 0.72rem;
+  color: var(--gold); font-weight: 500;
+}
+.ccy-badge {
+  display: inline-block;
+  background: var(--bg4); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px;
+  font-size: 0.68rem; color: var(--text2);
+}
+.table-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px; flex-wrap: wrap;
+}
+.refresh-note { font-size: 0.7rem; color: var(--text3); margin-left: auto; }
+
+/* Forms */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 0.75rem; font-weight: 600; color: var(--text2);
+  display: flex; align-items: center; gap: 5px;
+}
+.form-input, .form-select {
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); border-radius: var(--radius);
+  padding: 8px 10px; width: 100%;
+  transition: border-color var(--transition);
+}
+.form-input:focus, .form-select:focus {
+  outline: none; border-color: var(--gold);
+}
+.form-input::placeholder { color: var(--text3); }
+textarea.form-input { resize: vertical; min-height: 80px; }
+.form-section-title {
+  font-family: var(--font-d); font-size: 0.85rem; font-weight: 600;
+  color: var(--gold); padding: 10px 0 4px;
+  border-top: 1px solid var(--border); margin-top: 4px;
+}
+
+/* Modals */
+#modal-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#modal-backdrop.open { display: flex; }
+#modal-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 560px;
+  max-height: 90vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.modal-title { font-family: var(--font-d); font-size: 1.1rem; }
+.modal-close {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 1.2rem; padding: 2px 6px;
+  border-radius: 4px; transition: color var(--transition);
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Wizard */
+#wizard-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(13,17,23,0.95);
+  z-index: 2000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#wizard-overlay.open { display: flex; }
+.wizard-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 580px;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.6);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.wizard-top {
+  background: linear-gradient(135deg, #1a1f2e 0%, #1c2128 100%);
+  padding: 32px 32px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.wizard-step-num {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
+}
+.wizard-step-title { font-family: var(--font-d); font-size: 1.6rem; margin-bottom: 8px; }
+.wizard-step-desc { color: var(--text2); font-size: 0.88rem; line-height: 1.6; }
+.wizard-body { padding: 24px 32px; min-height: 160px; }
+.wizard-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  border-top: 1px solid var(--border);
+  background: var(--bg3);
+}
+.wizard-dots { display: flex; gap: 8px; }
+.wizard-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+.wizard-dot.active { background: var(--gold); transform: scale(1.25); }
+.wizard-dot.done { background: var(--green); }
+.wizard-buttons { display: flex; gap: 8px; }
+
+/* Tooltips (CSS-only) */
+.tip-wrap {
+  position: relative; display: inline-flex;
+  align-items: center; vertical-align: middle;
+}
+.tip-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--bg4); border: 1px solid var(--border);
+  color: var(--text3); font-size: 0.6rem; font-weight: 700;
+  cursor: help; margin-left: 4px;
+}
+.tip-box {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 0.75rem; line-height: 1.5;
+  color: var(--text2);
+  width: 240px; max-width: 90vw;
+  z-index: 500;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.tip-wrap:hover .tip-box { display: block; }
+
+/* Hint banners */
+.hint-banner {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(212,175,55,0.07);
+  border: 1px solid rgba(212,175,55,0.25);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+}
+.hint-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.hint-content { flex: 1; }
+.hint-text { color: var(--text2); line-height: 1.5; }
+.hint-actions { margin-top: 8px; display: flex; gap: 8px; }
+.hint-dismiss {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 1rem; padding: 0;
+  flex-shrink: 0; margin-top: 1px;
+  transition: color var(--transition);
+}
+.hint-dismiss:hover { color: var(--text); }
+
+/* Empty states */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.empty-icon { font-size: 2.8rem; margin-bottom: 16px; opacity: 0.6; }
+.empty-title { font-family: var(--font-d); font-size: 1.1rem; color: var(--text2); margin-bottom: 8px; }
+.empty-msg { font-size: 0.82rem; color: var(--text3); max-width: 300px; line-height: 1.6; margin-bottom: 20px; }
+
+/* FX Panel */
+.fx-panel {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.fx-panel-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.fx-panel-title { font-size: 0.82rem; font-weight: 600; color: var(--text2); }
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+.fx-item label { font-size: 0.7rem; color: var(--text3); display: block; margin-bottom: 4px; font-weight: 600; }
+.fx-input {
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); border-radius: var(--radius);
+  padding: 6px 8px; width: 100%;
+  font-family: var(--font-m); font-size: 0.8rem;
+  transition: border-color var(--transition);
+}
+.fx-input:focus { outline: none; border-color: var(--gold); }
+
+/* FIRE */
+.fire-bar-wrap { margin: 16px 0; }
+.fire-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.72rem; color: var(--text3); margin-bottom: 6px;
+}
+.fire-bar-track {
+  height: 10px; background: var(--bg4);
+  border-radius: 5px; overflow: hidden;
+}
+.fire-bar-fill {
+  height: 100%; border-radius: 5px;
+  background: linear-gradient(90deg, var(--gold), var(--green));
+  transition: width 0.4s ease;
+}
+.fire-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px; margin-top: 20px;
+}
+.fire-stat { background: var(--bg4); border-radius: var(--radius); padding: 12px; }
+.fire-stat-label { font-size: 0.7rem; color: var(--text3); margin-bottom: 4px; }
+.fire-stat-value { font-family: var(--font-m); font-size: 1rem; font-weight: 500; }
+
+/* Charts */
+.chart-wrap { position: relative; }
+.chart-wrap canvas { max-height: 320px; }
+
+/* History */
+.snapshot-list { display: flex; flex-direction: column; gap: 10px; }
+.snapshot-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.snapshot-date { font-family: var(--font-m); font-size: 0.75rem; color: var(--text3); min-width: 90px; }
+.snapshot-label { font-size: 0.85rem; font-weight: 500; flex: 1; }
+.snapshot-members { display: flex; flex-wrap: wrap; gap: 6px; }
+.snapshot-chip {
+  background: var(--bg4); border-radius: 4px;
+  padding: 2px 8px; font-size: 0.72rem;
+  font-family: var(--font-m); color: var(--text2);
+}
+
+/* Toast */
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 3000; pointer-events: none;
+}
+.toast {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 16px;
+  font-size: 0.82rem; color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 8px;
+  animation: toastIn 0.25s ease;
+  pointer-events: auto;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--blue); }
+@keyframes toastIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+/* Misc */
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.section-gap { margin-bottom: 24px; }
+.pnl-pos { color: var(--green); }
+.pnl-neg { color: var(--red); }
+.member-no-select .member-edit-btn { display: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  #sidebar { width: 200px; min-width: 200px; }
+  .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  #sidebar { display: none; }
+  #main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<!-- WIZARD OVERLAY -->
+<div id="wizard-overlay">
+  <div class="wizard-container">
+    <div class="wizard-top">
+      <div class="wizard-step-num" id="wiz-step-num">Step 1 of 5</div>
+      <div class="wizard-step-title" id="wiz-step-title">Welcome</div>
+      <div class="wizard-step-desc" id="wiz-step-desc"></div>
+    </div>
+    <div class="wizard-body" id="wiz-body"></div>
+    <div class="wizard-footer">
+      <div class="wizard-dots" id="wiz-dots"></div>
+      <div class="wizard-buttons">
+        <button class="btn btn-ghost btn-sm" id="wiz-skip">Skip</button>
+        <button class="btn btn-ghost btn-sm" id="wiz-back" style="display:none">Back</button>
+        <button class="btn btn-primary btn-sm" id="wiz-next">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div class="app-shell" id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">Family Wealth<br>Tracker</div>
+      <div class="brand-sub">Personal Finance Dashboard</div>
+    </div>
+    <div class="sidebar-section-label">Family Members</div>
+    <div class="member-list" id="member-list"></div>
+    <div style="padding:0 8px 8px">
+      <button class="btn btn-ghost btn-sm btn-full" data-action="add-member" style="justify-content:center;margin-top:4px">+ Add Member</button>
+    </div>
+    <div class="divider" style="margin:4px 0"></div>
+    <div class="sidebar-section-label">Navigation</div>
+    <div class="nav-list" id="nav-list">
+      <div class="nav-item" data-action="switch-view" data-view="dashboard"><span class="nav-icon">◈</span>Dashboard</div>
+      <div class="nav-item" data-action="switch-view" data-view="sgx"><span class="nav-icon">🇸🇬</span>SGX Holdings</div>
+      <div class="nav-item" data-action="switch-view" data-view="us"><span class="nav-icon">🇺🇸</span>US Holdings</div>
+      <div class="nav-item" data-action="switch-view" data-view="other"><span class="nav-icon">🌐</span>Other Markets</div>
+      <div class="nav-item" data-action="switch-view" data-view="fire"><span class="nav-icon">🔥</span>FIRE Tracker</div>
+      <div class="nav-item" data-action="switch-view" data-view="family"><span class="nav-icon">👨‍👩‍👧</span>Family Compare</div>
+      <div class="nav-item" data-action="switch-view" data-view="history"><span class="nav-icon">📈</span>History</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn btn-sidebar" data-action="ai-analyse"><span class="nav-icon">✦</span>AI Analyse</button>
+      <button class="btn btn-sidebar" data-action="open-snapshot"><span class="nav-icon">📷</span>Take Snapshot</button>
+      <button class="btn btn-sidebar" data-action="show-wizard"><span class="nav-icon">?</span>Help &amp; Guide</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="view-dashboard" class="view"></div>
+    <div id="view-sgx"       class="view" style="display:none"></div>
+    <div id="view-us"        class="view" style="display:none"></div>
+    <div id="view-other"     class="view" style="display:none"></div>
+    <div id="view-fire"      class="view" style="display:none"></div>
+    <div id="view-family"    class="view" style="display:none"></div>
+    <div id="view-history"   class="view" style="display:none"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-backdrop">
+  <div id="modal-container">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Modal</div>
+      <button class="modal-close" data-action="close-modal">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="close-modal">Cancel</button>
+      <button class="btn btn-primary" id="modal-submit">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════
+// ── CONSTANTS ─────────────────────────────────
+const PFX = 'fwt_clean_';
+const MEMBER_COLORS = ['#d4af37','#58a6ff','#3fb950','#bc8cff','#ffa657','#f85149','#39c5cf','#ff9de2'];
+const CURRENCIES = ['SGD','USD','HKD','EUR','GBP','AUD','JPY'];
+const CCY_SYM = {SGD:'S$',USD:'$',HKD:'HK$',EUR:'€',GBP:'£',AUD:'A$',JPY:'¥'};
+const CCY_LABEL = {SGD:'SGD (Singapore Dollar)',USD:'USD (US Dollar)',HKD:'HKD (Hong Kong Dollar)',EUR:'EUR (Euro)',GBP:'GBP (British Pound)',AUD:'AUD (Australian Dollar)',JPY:'JPY (Japanese Yen)'};
+const DEFAULT_FX = {USD:1.35,HKD:0.174,EUR:1.47,GBP:1.72,AUD:0.87,JPY:0.0089};
+const CHART_COLORS = {sgx:'#d4af37',us:'#58a6ff',other:'#bc8cff',cpf:'#3fb950',cash:'#ffa657',other_assets:'#8b949e',liabilities:'#f85149'};
+
+// ── STATE ─────────────────────────────────────
+const STATE = {
+  members: [],
+  fxRates: {...DEFAULT_FX},
+  history: [],
+  settings: {wizardCompleted: false},
+  ui: {activeMemberId: null, activeView: 'dashboard'}
+};
+let _dismissedHints = [];
+const _charts = {allocation:null, history:null, family:null};
+let _wizardStep = 1;
+let _modalSubmitFn = null;
+const _debounceTimers = {};
+
+// ── STORAGE ───────────────────────────────────
+function saveMembers()  { localStorage.setItem(PFX+'members',  JSON.stringify(STATE.members)); }
+function saveFxRates()  { localStorage.setItem(PFX+'fxRates',  JSON.stringify(STATE.fxRates)); }
+function saveHistory()  { localStorage.setItem(PFX+'history',  JSON.stringify(STATE.history)); }
+function saveSettings() { localStorage.setItem(PFX+'settings', JSON.stringify(STATE.settings)); }
+function saveDismissedHints() { localStorage.setItem(PFX+'hints', JSON.stringify(_dismissedHints)); }
+
+function loadState() {
+  try {
+    const m = localStorage.getItem(PFX+'members');
+    if (m) STATE.members = JSON.parse(m);
+  } catch(e) {}
+  try {
+    const f = localStorage.getItem(PFX+'fxRates');
+    if (f) STATE.fxRates = {...DEFAULT_FX, ...JSON.parse(f)};
+  } catch(e) {}
+  try {
+    const h = localStorage.getItem(PFX+'history');
+    if (h) STATE.history = JSON.parse(h);
+  } catch(e) {}
+  try {
+    const s = localStorage.getItem(PFX+'settings');
+    if (s) STATE.settings = {...STATE.settings, ...JSON.parse(s)};
+  } catch(e) {}
+  try {
+    const d = localStorage.getItem(PFX+'hints');
+    if (d) _dismissedHints = JSON.parse(d);
+  } catch(e) {}
+  // set active member
+  if (STATE.members.length > 0) {
+    const saved = STATE.settings.activeMemberId;
+    const found = saved && STATE.members.find(m => m.id === saved);
+    STATE.ui.activeMemberId = found ? saved : STATE.members[0].id;
+  }
+}
+
+// ── CRUD: MEMBERS ────────────────────────────
+function uid() {
+  return (typeof crypto !== 'undefined' && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+function pickColor(index) { return MEMBER_COLORS[index % MEMBER_COLORS.length]; }
+
+function memberDefaults(data) {
+  return {
+    id: uid(),
+    name: 'New Member',
+    color: pickColor(STATE.members.length),
+    cpf: {oa:0, sa:0, ma:0},
+    cash: 0,
+    otherAssets: 0,
+    liabilities: 0,
+    fireAnnualExpense: 0,
+    fireReturnRate: 4,
+    sgxHoldings: [],
+    usHoldings: [],
+    otherHoldings: [],
+    ...data
+  };
+}
+
+function addMember(data) {
+  const m = memberDefaults(data);
+  STATE.members.push(m);
+  STATE.ui.activeMemberId = m.id;
+  STATE.settings.activeMemberId = m.id;
+  saveMembers(); saveSettings();
+  return m;
+}
+function updateMember(id, data) {
+  const i = STATE.members.findIndex(m => m.id === id);
+  if (i < 0) return;
+  STATE.members[i] = {...STATE.members[i], ...data};
+  if (data.cpf) STATE.members[i].cpf = {...STATE.members[i].cpf, ...data.cpf};
+  saveMembers();
+}
+function deleteMember(id) {
+  STATE.members = STATE.members.filter(m => m.id !== id);
+  if (STATE.ui.activeMemberId === id) {
+    STATE.ui.activeMemberId = STATE.members.length > 0 ? STATE.members[0].id : null;
+    STATE.settings.activeMemberId = STATE.ui.activeMemberId;
+  }
+  saveMembers(); saveSettings();
+}
+
+// ── CRUD: HOLDINGS ────────────────────────────
+function holdingDefaults(type, data) {
+  const base = {id:uid(), ticker:'', name:'', shares:0, avgCost:0, currentPrice:0, lastRefreshed:null, ...data};
+  if (type === 'other') base.currency = data.currency || 'USD';
+  return base;
+}
+function getActiveMember() {
+  return STATE.members.find(m => m.id === STATE.ui.activeMemberId) || null;
+}
+function getMember(id) { return STATE.members.find(m => m.id === id) || null; }
+function holdingsKey(type) { return type+'Holdings'; }
+
+function addHolding(type, data) {
+  const m = getActiveMember(); if (!m) return;
+  m[holdingsKey(type)].push(holdingDefaults(type, data));
+  saveMembers();
+}
+function updateHolding(type, id, data) {
+  const m = getActiveMember(); if (!m) return;
+  const arr = m[holdingsKey(type)];
+  const i = arr.findIndex(h => h.id === id); if (i < 0) return;
+  arr[i] = {...arr[i], ...data};
+  saveMembers();
+}
+function deleteHolding(type, id) {
+  const m = getActiveMember(); if (!m) return;
+  m[holdingsKey(type)] = m[holdingsKey(type)].filter(h => h.id !== id);
+  saveMembers();
+}
+
+// ── COMPUTED ──────────────────────────────────
+function toSGD(amount, currency) {
+  if (!currency || currency === 'SGD') return amount;
+  return amount * (STATE.fxRates[currency] || 1);
+}
+
+function holdingCurrency(h, type) {
+  if (type === 'sgx') return 'SGD';
+  if (type === 'us')  return 'USD';
+  return h.currency || 'USD';
+}
+
+function computeHolding(h, type) {
+  const ccy = holdingCurrency(h, type);
+  const price = h.currentPrice > 0 ? h.currentPrice : h.avgCost;
+  const valueSGD  = toSGD(h.shares * price, ccy);
+  const costSGD   = toSGD(h.shares * h.avgCost, ccy);
+  const pnlSGD    = valueSGD - costSGD;
+  const pnlPct    = costSGD > 0 ? (pnlSGD / costSGD * 100) : 0;
+  return {valueSGD, costSGD, pnlSGD, pnlPct, ccy, price};
+}
+
+function computeNetWorth(m) {
+  if (!m) return {sgx:0,us:0,other:0,cpfTotal:0,cash:0,otherAssets:0,liabilities:0,assets:0,netWorth:0};
+  const sgx  = (m.sgxHoldings  ||[]).reduce((s,h) => s + computeHolding(h,'sgx').valueSGD, 0);
+  const us   = (m.usHoldings   ||[]).reduce((s,h) => s + computeHolding(h,'us').valueSGD,  0);
+  const other= (m.otherHoldings||[]).reduce((s,h) => s + computeHolding(h,'other').valueSGD,0);
+  const cpf  = m.cpf || {};
+  const cpfTotal = (cpf.oa||0) + (cpf.sa||0) + (cpf.ma||0);
+  const cash = m.cash||0, oa = m.otherAssets||0, liab = m.liabilities||0;
+  const assets = sgx + us + other + cpfTotal + cash + oa;
+  return {sgx, us, other, cpfTotal, cash, otherAssets:oa, liabilities:liab, assets, netWorth: assets - liab};
+}
+
+function computeFIRE(m) {
+  const expense = m.fireAnnualExpense || 0;
+  const rate    = (m.fireReturnRate  || 4) / 100;
+  const fireNum = rate > 0 ? expense / rate : 0;
+  const nw      = computeNetWorth(m);
+  const current = nw.netWorth;
+  const pct     = fireNum > 0 ? Math.min((current / fireNum) * 100, 100) : 0;
+  const gap     = Math.max(fireNum - current, 0);
+  let years = null;
+  if (fireNum > 0 && current < fireNum && rate > 0) {
+    // simplified: NW grows at rate, no additional savings
+    years = Math.log(fireNum / Math.max(current, 1)) / Math.log(1 + rate);
+    if (years < 0 || !isFinite(years)) years = null;
+  }
+  return {fireNum, current, pct, gap, expense, rate, years};
+}
+
+// ── FORMATTERS ────────────────────────────────
+function fmtSGD(n) {
+  if (n === null || n === undefined || isNaN(n)) return 'S$—';
+  const abs = Math.abs(n).toLocaleString('en-SG', {minimumFractionDigits:2, maximumFractionDigits:2});
+  return (n < 0 ? '-' : '') + 'S$' + abs;
+}
+function fmtCcy(n, ccy) {
+  if (n === null || isNaN(n)) return '—';
+  const sym = CCY_SYM[ccy] || ccy;
+  const abs = Math.abs(n).toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+  return (n < 0 ? '-' : '') + sym + abs;
+}
+function fmtPct(n, sign=true) {
+  if (n === null || isNaN(n)) return '—';
+  return (sign && n > 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+function fmtNum(n, dp=0) {
+  if (n === null || isNaN(n)) return '—';
+  return n.toLocaleString('en', {minimumFractionDigits:dp, maximumFractionDigits:dp});
+}
+function fmtDate(d) {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  return dt.toLocaleDateString('en-SG', {day:'2-digit', month:'short', year:'numeric'});
+}
+function fmtDateShort(d) {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  return dt.toLocaleDateString('en-SG', {day:'2-digit', month:'short'});
+}
+function pnlClass(n) { return n >= 0 ? 'pnl-pos' : 'pnl-neg'; }
+function tip(text) {
+  return `<span class="tip-wrap"><span class="tip-badge">?</span><div class="tip-box">${text}</div></span>`;
+}
+function debounce(key, fn, ms=400) {
+  clearTimeout(_debounceTimers[key]);
+  _debounceTimers[key] = setTimeout(fn, ms);
+}
+function destroyChart(key) {
+  if (_charts[key]) { try { _charts[key].destroy(); } catch(e){} _charts[key] = null; }
+}
+// ═══════════════════════════════════════════════
+// ── SIDEBAR ───────────────────────────────────
+function renderSidebar() {
+  // member list
+  const ml = document.getElementById('member-list');
+  if (ml) {
+    if (STATE.members.length === 0) {
+      ml.innerHTML = '<div class="text-muted text-sm" style="padding:8px 8px 4px">No members yet.</div>';
+    } else {
+      ml.innerHTML = STATE.members.map(m => {
+        const nw = computeNetWorth(m);
+        const active = m.id === STATE.ui.activeMemberId ? ' active' : '';
+        return `<div class="member-item${active}" data-action="switch-member" data-id="${m.id}">
+          <div class="member-avatar" style="background:${m.color}">${(m.name||'?')[0].toUpperCase()}</div>
+          <div class="member-info">
+            <div class="member-name">${esc(m.name)}</div>
+            <div class="member-nw">${fmtSGD(nw.netWorth)}</div>
+          </div>
+          <button class="member-edit-btn" data-action="edit-member" data-id="${m.id}" title="Edit member">⚙</button>
+        </div>`;
+      }).join('');
+    }
+  }
+  // nav active state
+  document.querySelectorAll('.nav-item[data-action="switch-view"]').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === STATE.ui.activeView);
+  });
+}
+
+// ── VIEW DISPATCHER ───────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+  const el = document.getElementById('view-' + name);
+  if (el) el.style.display = 'block';
+}
+
+function renderView() {
+  showView(STATE.ui.activeView);
+  switch (STATE.ui.activeView) {
+    case 'dashboard': renderDashboard(); break;
+    case 'sgx':       renderSGXView();   break;
+    case 'us':        renderUSView();    break;
+    case 'other':     renderOtherView(); break;
+    case 'fire':      renderFIREView();  break;
+    case 'family':    renderFamilyView();break;
+    case 'history':   renderHistoryView();break;
+  }
+}
+
+function renderAll() { renderSidebar(); renderView(); }
+
+function switchView(name) {
+  STATE.ui.activeView = name;
+  renderAll();
+}
+
+// ── EMPTY STATE & HINT HELPERS ────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function emptyState(icon, title, msg, action, label) {
+  const btn = action ? `<button class="btn btn-primary" data-action="${action}">${label}</button>` : '';
+  return `<div class="empty-state">
+    <div class="empty-icon">${icon}</div>
+    <div class="empty-title">${title}</div>
+    <div class="empty-msg">${msg}</div>
+    ${btn}
+  </div>`;
+}
+
+const HINT_CFG = {
+  dashboard: { icon:'💡', text:'Start by adding a family member using the sidebar button below.' , cta:'add-member', ctaLabel:'Add Member' },
+  sgx:       { icon:'📊', text:'Add your first SGX holding to track Singapore-listed stocks and ETFs.', cta:'add-sgx', ctaLabel:'Add SGX Holding' },
+  us:        { icon:'📊', text:'Add your first US holding. Use plain tickers like AAPL or VTI.', cta:'add-us', ctaLabel:'Add US Holding' },
+  other:     { icon:'🌐', text:'Add holdings from HK, LSE, Euronext, ASX, TSE and more. Set FX rates above.', cta:'add-other', ctaLabel:'Add Holding' },
+  fire:      { icon:'🔥', text:'Edit this member to set annual expenses and return rate to see your FIRE progress.', cta:null, ctaLabel:null }
+};
+
+function renderHintBanner(context) {
+  if (_dismissedHints.includes(context)) return '';
+  const cfg = HINT_CFG[context]; if (!cfg) return '';
+  const btn = cfg.cta ? `<button class="btn btn-gold-ghost btn-sm" data-action="${cfg.cta}">${cfg.ctaLabel}</button>` : '';
+  return `<div class="hint-banner">
+    <span class="hint-icon">${cfg.icon}</span>
+    <div class="hint-content">
+      <div class="hint-text">${cfg.text}</div>
+      ${btn ? `<div class="hint-actions">${btn}</div>` : ''}
+    </div>
+    <button class="hint-dismiss" data-action="dismiss-hint" data-context="${context}" title="Dismiss">✕</button>
+  </div>`;
+}
+
+function dismissHint(context) {
+  if (!_dismissedHints.includes(context)) _dismissedHints.push(context);
+  saveDismissedHints(); renderView();
+}
+
+// ── DASHBOARD ─────────────────────────────────
+function renderDashboard() {
+  const el = document.getElementById('view-dashboard');
+  if (!el) return;
+  if (STATE.members.length === 0) {
+    el.innerHTML = renderHintBanner('dashboard') +
+      emptyState('🏦','Welcome to Family Wealth Tracker','Add your first family member to get started tracking your family\'s wealth and path to financial independence.','add-member','Add Your First Member');
+    return;
+  }
+  const m = getActiveMember();
+  if (!m) { el.innerHTML = emptyState('👤','Select a Member','Choose a family member from the sidebar.','',''); return; }
+  const nw = computeNetWorth(m);
+  const fire = computeFIRE(m);
+  const totalInvested = nw.sgx + nw.us + nw.other;
+  const totalPnL = ['sgx','us','other'].reduce((s, type) => {
+    return s + (m[type+'Holdings']||[]).reduce((ss,h) => ss + computeHolding(h,type).pnlSGD, 0);
+  }, 0);
+
+  el.innerHTML = `
+    <div class="view-header">
+      <div>
+        <h2 class="view-title">${esc(m.name)}'s Dashboard</h2>
+        <div class="text-muted text-sm">As of ${fmtDate(new Date())}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-action="edit-member" data-id="${m.id}">⚙ Edit Member</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Net Worth</div>
+        <div class="stat-value big">${fmtSGD(nw.netWorth)}</div>
+        <div class="stat-sub">Total assets minus liabilities</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Assets</div>
+        <div class="stat-value">${fmtSGD(nw.assets)}</div>
+        <div class="stat-sub">Investments + CPF + Cash</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Invested (SGD)</div>
+        <div class="stat-value">${fmtSGD(totalInvested)}</div>
+        <div class="stat-sub">SGX + US + Other Markets</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unrealised P&amp;L</div>
+        <div class="stat-value ${pnlClass(totalPnL)}">${fmtSGD(totalPnL)}</div>
+        <div class="stat-sub">${fmtPct(totalInvested>0?totalPnL/(totalInvested-totalPnL)*100:0)} on cost</div>
+      </div>
+      ${fire.fireNum > 0 ? `<div class="stat-card">
+        <div class="stat-label">FIRE Progress</div>
+        <div class="stat-value ${fire.pct>=100?'text-green':''}">${fmtPct(fire.pct, false)}</div>
+        <div class="stat-sub">of ${fmtSGD(fire.fireNum)} goal</div>
+      </div>` : ''}
+    </div>
+    <div class="two-col section-gap">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Asset Allocation</div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-alloc" height="220"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Breakdown</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+          ${allocRow('SGX Holdings', nw.sgx, nw.assets, '#d4af37')}
+          ${allocRow('US Holdings',  nw.us,  nw.assets, '#58a6ff')}
+          ${allocRow('Other Markets',nw.other,nw.assets,'#bc8cff')}
+          ${allocRow('CPF Total',nw.cpfTotal,nw.assets,'#3fb950')}
+          ${allocRow('Cash',nw.cash,nw.assets,'#ffa657')}
+          ${allocRow('Other Assets',nw.otherAssets,nw.assets,'#8b949e')}
+          ${nw.liabilities>0?allocRow('Liabilities (–)',nw.liabilities,nw.assets,'#f85149'):''}
+        </div>
+      </div>
+    </div>`;
+  renderAllocationChart(m, nw);
+}
+
+function allocRow(label, val, total, color) {
+  const pct = total > 0 ? (val / total * 100) : 0;
+  return `<div style="display:flex;align-items:center;gap:10px">
+    <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
+    <div style="flex:1;font-size:0.8rem">${label}</div>
+    <div class="mono text-sm">${fmtSGD(val)}</div>
+    <div class="text-muted text-xs" style="min-width:38px;text-align:right">${fmtPct(pct,false)}</div>
+  </div>`;
+}
+
+// ── HOLDINGS TABLE ────────────────────────────
+function tableToolbar(type, lastRefreshed) {
+  const labels = {sgx:'SGX Holding',us:'US Holding',other:'Other Markets Holding'};
+  const note = lastRefreshed ? `Updated ${fmtDate(lastRefreshed)}` : 'Prices not yet refreshed';
+  return `<div class="table-toolbar">
+    <button class="btn btn-primary btn-sm" data-action="add-${type}">+ Add ${labels[type]||'Holding'}</button>
+    <button class="btn btn-ghost btn-sm" data-action="refresh-prices" data-type="${type}" id="refresh-btn-${type}">↻ Refresh Prices</button>
+    <span class="refresh-note">${note}</span>
+  </div>`;
+}
+
+const TIP_YAHOO = tip('Enter the full Yahoo Finance symbol. Examples: D05.SI (DBS), 0700.HK (Tencent), VWRL.L (Vanguard FTSE All-World on LSE), VTI (Vanguard US ETF).');
+const TIP_UCITS = tip('UCITS ETFs (e.g. on LSE or Euronext) may have different tax treatment than US-domiciled ETFs. Consult a tax advisor for your jurisdiction.');
+
+function holdingRow(h, type) {
+  const cv = computeHolding(h, type);
+  const priceDisplay = h.currentPrice > 0 ? fmtCcy(h.currentPrice, cv.ccy) : '<span class="text-muted">—</span>';
+  const pnlDisplay   = cv.pnlSGD !== 0 || h.currentPrice > 0
+    ? `<span class="${pnlClass(cv.pnlSGD)}">${fmtSGD(cv.pnlSGD)}</span>`
+    : '<span class="text-muted">—</span>';
+  const pnlPctDisplay = h.currentPrice > 0
+    ? `<span class="${pnlClass(cv.pnlPct)}">${fmtPct(cv.pnlPct)}</span>`
+    : '<span class="text-muted">—</span>';
+
+  const ccyCol = type === 'other'
+    ? `<td><span class="ccy-badge">${esc(h.currency||'USD')}</span></td>` : '';
+
+  return `<tr>
+    <td><span class="ticker-badge">${esc(h.ticker||'—')}</span></td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(h.name||'')}</td>
+    ${ccyCol}
+    <td class="num">${fmtNum(h.shares, h.shares%1===0?0:4)}</td>
+    <td class="num">${fmtCcy(h.avgCost, cv.ccy)}</td>
+    <td class="num">${priceDisplay}</td>
+    <td class="num bold">${fmtSGD(cv.valueSGD)}</td>
+    <td class="num">${pnlDisplay}</td>
+    <td class="num">${pnlPctDisplay}</td>
+    <td class="actions">
+      <button class="btn btn-icon" data-action="edit-holding" data-type="${type}" data-id="${h.id}" title="Edit">✏</button>
+      <button class="btn btn-icon btn-danger" data-action="delete-holding" data-type="${type}" data-id="${h.id}" title="Delete">✕</button>
+    </td>
+  </tr>`;
+}
+
+function holdingsTableHTML(type, holdings) {
+  const ccyHead = type === 'other' ? '<th>Ccy</th>' : '';
+  const unitLabel = {sgx:'SGD',us:'USD',other:'Local'}[type] || '';
+  const rows = holdings.length > 0
+    ? holdings.map(h => holdingRow(h, type)).join('')
+    : `<tr><td colspan="${type==='other'?10:9}" style="padding:0">${emptyState('📭','No holdings yet','Add your first position using the button above.',null,null)}</td></tr>`;
+  return `<div class="table-wrap">
+    <table class="holdings-table">
+      <thead><tr>
+        <th>Symbol</th><th>Name</th>${ccyHead}
+        <th class="num">Shares</th>
+        <th class="num">Avg Cost (${unitLabel})</th>
+        <th class="num">Price (${unitLabel})</th>
+        <th class="num">Value (SGD)</th>
+        <th class="num">P&amp;L (SGD)</th>
+        <th class="num">P&amp;L %</th>
+        <th class="actions">Actions</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function holdingsTotalsRow(holdings, type) {
+  if (!holdings.length) return '';
+  const totalVal  = holdings.reduce((s,h) => s + computeHolding(h,type).valueSGD, 0);
+  const totalPnL  = holdings.reduce((s,h) => s + computeHolding(h,type).pnlSGD,  0);
+  const totalCost = holdings.reduce((s,h) => s + computeHolding(h,type).costSGD,  0);
+  const totalPct  = totalCost > 0 ? (totalPnL / totalCost * 100) : 0;
+  return `<div style="display:flex;justify-content:flex-end;gap:24px;padding:10px 4px;font-size:0.8rem">
+    <span class="text-muted">Total Value: <span class="mono bold text-gold">${fmtSGD(totalVal)}</span></span>
+    <span class="text-muted">Total P&amp;L: <span class="mono ${pnlClass(totalPnL)}">${fmtSGD(totalPnL)} (${fmtPct(totalPct)})</span></span>
+  </div>`;
+}
+
+// ── SGX VIEW ──────────────────────────────────
+function renderSGXView() {
+  const el = document.getElementById('view-sgx'); if (!el) return;
+  const m = getActiveMember();
+  if (!m) { el.innerHTML = emptyState('👤','No Member Selected','Select a member from the sidebar.',null,null); return; }
+  const holdings = m.sgxHoldings || [];
+  const lastRef  = holdings.reduce((d,h) => h.lastRefreshed && (!d||h.lastRefreshed>d) ? h.lastRefreshed : d, null);
+  el.innerHTML = `
+    <div class="view-header">
+      <div><h2 class="view-title">SGX Holdings</h2>
+        <div class="text-muted text-sm">Singapore Exchange — prices in SGD</div>
+      </div>
+    </div>
+    ${renderHintBanner('sgx')}
+    ${tableToolbar('sgx', lastRef)}
+    ${holdingsTableHTML('sgx', holdings)}
+    ${holdingsTotalsRow(holdings,'sgx')}`;
+}
+
+// ── US VIEW ───────────────────────────────────
+function renderUSView() {
+  const el = document.getElementById('view-us'); if (!el) return;
+  const m = getActiveMember();
+  if (!m) { el.innerHTML = emptyState('👤','No Member Selected','Select a member from the sidebar.',null,null); return; }
+  const holdings = m.usHoldings || [];
+  const lastRef  = holdings.reduce((d,h) => h.lastRefreshed && (!d||h.lastRefreshed>d) ? h.lastRefreshed : d, null);
+  el.innerHTML = `
+    <div class="view-header">
+      <div><h2 class="view-title">US Holdings</h2>
+        <div class="text-muted text-sm">NYSE / NASDAQ — prices in USD · 1 USD = S$${STATE.fxRates.USD.toFixed(4)}</div>
+      </div>
+    </div>
+    ${renderHintBanner('us')}
+    ${tableToolbar('us', lastRef)}
+    ${holdingsTableHTML('us', holdings)}
+    ${holdingsTotalsRow(holdings,'us')}`;
+}
+
+// ── OTHER MARKETS VIEW ────────────────────────
+function renderFxPanel() {
+  const pairs = [
+    {ccy:'USD',label:'USD / SGD'},
+    {ccy:'HKD',label:'HKD / SGD'},
+    {ccy:'EUR',label:'EUR / SGD'},
+    {ccy:'GBP',label:'GBP / SGD'},
+    {ccy:'AUD',label:'AUD / SGD'},
+    {ccy:'JPY',label:'JPY / SGD'}
+  ];
+  return `<div class="fx-panel">
+    <div class="fx-panel-header">
+      <span class="fx-panel-title">⇄ FX Rates → SGD</span>
+      <span class="text-muted text-xs">Used to convert all Other Markets holdings. Also applies to US Holdings.</span>
+    </div>
+    <div class="fx-grid">
+      ${pairs.map(p => `<div class="fx-item">
+        <label>${p.label}</label>
+        <input type="number" class="fx-input" data-ccy="${p.ccy}" value="${STATE.fxRates[p.ccy]}" step="0.0001" min="0.00001">
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderOtherView() {
+  const el = document.getElementById('view-other'); if (!el) return;
+  const m = getActiveMember();
+  if (!m) { el.innerHTML = emptyState('👤','No Member Selected','Select a member from the sidebar.',null,null); return; }
+  const holdings = m.otherHoldings || [];
+  const lastRef  = holdings.reduce((d,h) => h.lastRefreshed && (!d||h.lastRefreshed>d) ? h.lastRefreshed : d, null);
+  el.innerHTML = `
+    <div class="view-header">
+      <div>
+        <h2 class="view-title">Other Markets ${TIP_UCITS}</h2>
+        <div class="text-muted text-sm">HK · LSE · Euronext · ASX · TSE · any exchange — converted to SGD</div>
+      </div>
+    </div>
+    ${renderFxPanel()}
+    ${renderHintBanner('other')}
+    ${tableToolbar('other', lastRef)}
+    ${holdingsTableHTML('other', holdings)}
+    ${holdingsTotalsRow(holdings,'other')}`;
+}
+// ═══════════════════════════════════════════════
+// ── ALLOCATION CHART ──────────────────────────
+function renderAllocationChart(m, nw) {
+  destroyChart('allocation');
+  const ctx = document.getElementById('chart-alloc'); if (!ctx) return;
+  const items = [
+    {label:'SGX Holdings',  val:nw.sgx,         color:'#d4af37'},
+    {label:'US Holdings',   val:nw.us,          color:'#58a6ff'},
+    {label:'Other Markets', val:nw.other,        color:'#bc8cff'},
+    {label:'CPF Total',     val:nw.cpfTotal,     color:'#3fb950'},
+    {label:'Cash',          val:nw.cash,         color:'#ffa657'},
+    {label:'Other Assets',  val:nw.otherAssets,  color:'#8b949e'},
+  ].filter(i => i.val > 0);
+  if (nw.liabilities > 0) items.push({label:'Liabilities (–)', val:nw.liabilities, color:'#f85149'});
+  if (!items.length) { ctx.style.display='none'; return; }
+  _charts.allocation = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: items.map(i=>i.label),
+      datasets: [{data: items.map(i=>i.val), backgroundColor: items.map(i=>i.color), borderWidth:2, borderColor:'#1c2128'}]
+    },
+    options: {
+      cutout: '62%',
+      plugins: {
+        legend: {position:'right', labels:{color:'#8b949e', font:{size:11}, padding:10}},
+        tooltip: {callbacks:{label: ctx => ' ' + fmtSGD(ctx.raw)}}
+      }
+    }
+  });
+}
+
+// ── FIRE VIEW ─────────────────────────────────
+function renderFIREView() {
+  const el = document.getElementById('view-fire'); if (!el) return;
+  const m = getActiveMember();
+  if (!m) { el.innerHTML = emptyState('👤','No Member Selected','Select a member from the sidebar.',null,null); return; }
+  const f = computeFIRE(m);
+  const banner = (!m.fireAnnualExpense || m.fireAnnualExpense === 0) ? renderHintBanner('fire') : '';
+  const barPct = Math.min(f.pct, 100).toFixed(1);
+  const tipFIRE = tip('FIRE Number = Annual Expenses ÷ Expected Annual Return Rate. Using the 4% rule (SWR), this equals 25× your annual expenses.');
+  const yearsStr = f.years != null ? `~${Math.ceil(f.years)} years` : (f.pct >= 100 ? '🎉 Achieved!' : '—');
+
+  el.innerHTML = `
+    <div class="view-header">
+      <div><h2 class="view-title">🔥 FIRE Tracker</h2>
+        <div class="text-muted text-sm">Financial Independence, Retire Early</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-action="edit-member" data-id="${m.id}">⚙ Update Goals</button>
+    </div>
+    ${banner}
+    <div class="card section-gap">
+      <div style="text-align:center;padding:8px 0 16px">
+        <div class="text-muted text-sm mb-1">FIRE Number ${tipFIRE}</div>
+        <div style="font-family:var(--font-d);font-size:2.4rem;color:var(--gold)">${fmtSGD(f.fireNum)}</div>
+        <div class="text-muted text-sm mt-2">${fmtSGD(f.expense)}/yr ÷ ${(f.rate*100).toFixed(1)}% return rate</div>
+      </div>
+      <div class="fire-bar-wrap">
+        <div class="fire-bar-label">
+          <span>S$0</span>
+          <span class="${f.pct>=100?'text-green bold':''}">${barPct}% reached</span>
+          <span>${fmtSGD(f.fireNum)}</span>
+        </div>
+        <div class="fire-bar-track">
+          <div class="fire-bar-fill" style="width:${barPct}%"></div>
+        </div>
+      </div>
+      <div class="fire-stats">
+        <div class="fire-stat">
+          <div class="fire-stat-label">Current Net Worth</div>
+          <div class="fire-stat-value">${fmtSGD(f.current)}</div>
+        </div>
+        <div class="fire-stat">
+          <div class="fire-stat-label">Gap to FIRE</div>
+          <div class="fire-stat-value ${f.gap===0?'text-green':''}">${f.gap>0?fmtSGD(f.gap):'🎉 Achieved!'}</div>
+        </div>
+        <div class="fire-stat">
+          <div class="fire-stat-label">Progress</div>
+          <div class="fire-stat-value ${f.pct>=100?'text-green':''}">${fmtPct(f.pct, false)}</div>
+        </div>
+        <div class="fire-stat">
+          <div class="fire-stat-label">Est. Years to FIRE ${tip('Assumes no additional savings; net worth grows at the stated return rate. Add savings rate in member settings for a more accurate estimate.')}</div>
+          <div class="fire-stat-value">${yearsStr}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── FAMILY VIEW ───────────────────────────────
+function renderFamilyView() {
+  const el = document.getElementById('view-family'); if (!el) return;
+  if (STATE.members.length === 0) {
+    el.innerHTML = emptyState('👨‍👩‍👧','No Family Members','Add members to compare net worth across the family.',null,null);
+    return;
+  }
+  const rows = STATE.members.map(m => {
+    const nw = computeNetWorth(m);
+    const f  = computeFIRE(m);
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="member-avatar" style="background:${m.color};width:24px;height:24px;font-size:0.65rem">${(m.name||'?')[0].toUpperCase()}</div>
+          <span>${esc(m.name)}</span>
+        </div>
+      </td>
+      <td class="num bold">${fmtSGD(nw.netWorth)}</td>
+      <td class="num">${fmtSGD(nw.sgx)}</td>
+      <td class="num">${fmtSGD(nw.us)}</td>
+      <td class="num">${fmtSGD(nw.other)}</td>
+      <td class="num">${fmtSGD(nw.cpfTotal)}</td>
+      <td class="num">${fmtSGD(nw.cash)}</td>
+      <td class="num text-red">${nw.liabilities>0?fmtSGD(nw.liabilities):'—'}</td>
+      <td class="num">${f.fireNum>0?fmtPct(f.pct,false):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">Family Comparison</h2>
+    </div>
+    <div class="card section-gap">
+      <div class="card-header"><div class="card-title">Net Worth Overview</div></div>
+      <div class="chart-wrap"><canvas id="chart-family" height="240"></canvas></div>
+    </div>
+    <div class="table-wrap section-gap">
+      <table class="holdings-table">
+        <thead><tr>
+          <th>Member</th><th class="num">Net Worth</th><th class="num">SGX</th>
+          <th class="num">US</th><th class="num">Other</th><th class="num">CPF</th>
+          <th class="num">Cash</th><th class="num">Liabilities</th><th class="num">FIRE%</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  renderFamilyChart();
+}
+
+function renderFamilyChart() {
+  destroyChart('family');
+  const ctx = document.getElementById('chart-family'); if (!ctx) return;
+  const labels = STATE.members.map(m => m.name);
+  const keys = ['sgx','us','other','cpfTotal','cash','otherAssets'];
+  const kLabels = ['SGX','US','Other','CPF','Cash','Other Assets'];
+  const kColors = ['#d4af37','#58a6ff','#bc8cff','#3fb950','#ffa657','#8b949e'];
+  const datasets = keys.map((k, i) => ({
+    label: kLabels[i],
+    data: STATE.members.map(m => computeNetWorth(m)[k] || 0),
+    backgroundColor: kColors[i],
+    borderRadius: 3,
+  }));
+  _charts.family = new Chart(ctx, {
+    type: 'bar',
+    data: {labels, datasets},
+    options: {
+      responsive:true, scales:{
+        x:{stacked:true, ticks:{color:'#8b949e'}, grid:{color:'#21262d'}},
+        y:{stacked:true, ticks:{color:'#8b949e', callback: v=>fmtSGD(v)}, grid:{color:'#21262d'}}
+      },
+      plugins:{legend:{labels:{color:'#8b949e', font:{size:11}}}}
+    }
+  });
+}
+
+// ── HISTORY VIEW ──────────────────────────────
+function renderHistoryView() {
+  const el = document.getElementById('view-history'); if (!el) return;
+  const snapList = STATE.history.length === 0
+    ? emptyState('📷','No Snapshots Yet','Click "Take Snapshot" in the sidebar to save the current state of your portfolio.',null,null)
+    : `<div class="snapshot-list">${STATE.history.map(s => snapshotCard(s)).join('')}</div>`;
+
+  el.innerHTML = `
+    <div class="view-header">
+      <div><h2 class="view-title">Wealth History</h2>
+        <div class="text-muted text-sm">${STATE.history.length} snapshot${STATE.history.length!==1?'s':''} recorded</div>
+      </div>
+      <button class="btn btn-primary btn-sm" data-action="open-snapshot">📷 Take Snapshot</button>
+    </div>
+    ${snapList}
+    ${STATE.history.length >= 2 ? `<div class="card mt-3">
+      <div class="card-header"><div class="card-title">Net Worth Over Time</div></div>
+      <div class="chart-wrap"><canvas id="chart-history" height="260"></canvas></div>
+    </div>` : ''}`;
+  if (STATE.history.length >= 2) renderHistoryChart();
+}
+
+function snapshotCard(s) {
+  const chips = (s.data||[]).map(d =>
+    `<span class="snapshot-chip">${esc(d.memberName)}: ${fmtSGD(d.netWorth)}</span>`
+  ).join('');
+  return `<div class="snapshot-card">
+    <div class="snapshot-date">${fmtDate(s.date)}</div>
+    <div class="snapshot-label">${esc(s.label)}</div>
+    <div class="snapshot-members">${chips}</div>
+    <button class="btn btn-icon btn-danger" data-action="delete-snapshot" data-id="${s.id}" title="Delete snapshot">✕</button>
+  </div>`;
+}
+
+function renderHistoryChart() {
+  destroyChart('history');
+  const ctx = document.getElementById('chart-history'); if (!ctx) return;
+  const sorted = [...STATE.history].reverse(); // oldest first
+  const labels = sorted.map(s => fmtDateShort(s.date));
+  const datasets = STATE.members.map(m => ({
+    label: m.name,
+    data: sorted.map(s => { const d = (s.data||[]).find(x=>x.memberId===m.id); return d ? d.netWorth : null; }),
+    borderColor: m.color,
+    backgroundColor: 'transparent',
+    tension: 0.35,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+  }));
+  _charts.history = new Chart(ctx, {
+    type: 'line',
+    data: {labels, datasets},
+    options: {
+      responsive:true,
+      scales:{
+        x:{ticks:{color:'#8b949e'}, grid:{color:'#21262d'}},
+        y:{ticks:{color:'#8b949e', callback: v=>fmtSGD(v)}, grid:{color:'#21262d'}}
+      },
+      plugins:{legend:{labels:{color:'#8b949e', font:{size:11}}}}
+    }
+  });
+}
+// ═══════════════════════════════════════════════
+// ── MODALS ────────────────────────────────────
+function openModal(title, bodyHTML, onSubmit, submitLabel) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHTML;
+  document.getElementById('modal-submit').textContent = submitLabel || 'Save';
+  _modalSubmitFn = onSubmit;
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  document.getElementById('modal-body').innerHTML = '';
+  _modalSubmitFn = null;
+}
+function confirmModal(msg, onConfirm) {
+  openModal('Confirm', `<p class="text-secondary">${msg}</p>`, onConfirm, 'Confirm');
+}
+
+// ── MEMBER FORM ───────────────────────────────
+const TIP_CPF_OA = tip('CPF Ordinary Account — can be used for housing, education, and investment. Earns 2.5% p.a.');
+const TIP_CPF_SA = tip('CPF Special Account — for retirement. Earns 4% p.a. and cannot be withdrawn until age 55 (subject to rules).');
+const TIP_CPF_MA = tip('CPF MediSave Account — for healthcare expenses and medical insurance premiums.');
+
+function memberFormHTML(m) {
+  const v = k => esc(m ? (m[k]||'') : '');
+  const cpf = m ? (m.cpf||{}) : {};
+  return `<div class="form-grid">
+    <div class="form-group full">
+      <label class="form-label">Name *</label>
+      <input id="mf-name" class="form-input" value="${v('name')}" placeholder="e.g. Alice">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cash (SGD)</label>
+      <input id="mf-cash" type="number" class="form-input" value="${m?m.cash||0:0}" min="0" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Other Assets (SGD)</label>
+      <input id="mf-other-assets" type="number" class="form-input" value="${m?m.otherAssets||0:0}" min="0" step="0.01" placeholder="Property, car, etc.">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Liabilities (SGD)</label>
+      <input id="mf-liabilities" type="number" class="form-input" value="${m?m.liabilities||0:0}" min="0" step="0.01" placeholder="Mortgage, loans, etc.">
+    </div>
+  </div>
+  <div class="form-section-title">CPF Balances ${TIP_CPF_OA}</div>
+  <div class="form-grid-3">
+    <div class="form-group">
+      <label class="form-label">OA ${TIP_CPF_OA}</label>
+      <input id="mf-cpf-oa" type="number" class="form-input" value="${cpf.oa||0}" min="0" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">SA ${TIP_CPF_SA}</label>
+      <input id="mf-cpf-sa" type="number" class="form-input" value="${cpf.sa||0}" min="0" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">MA ${TIP_CPF_MA}</label>
+      <input id="mf-cpf-ma" type="number" class="form-input" value="${cpf.ma||0}" min="0" step="0.01">
+    </div>
+  </div>
+  <div class="form-section-title">FIRE Goals</div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Annual Expenses (SGD) ${tip('Your estimated annual spending in retirement. The FIRE Number = Annual Expenses ÷ Return Rate.')}</label>
+      <input id="mf-fire-exp" type="number" class="form-input" value="${m?m.fireAnnualExpense||0:0}" min="0" step="100">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Expected Return Rate (%) ${tip('Annual portfolio return rate used to calculate FIRE Number. Default 4% = the classic 4% Safe Withdrawal Rate (25× rule).')}</label>
+      <input id="mf-fire-rate" type="number" class="form-input" value="${m?m.fireReturnRate||4:4}" min="0.1" max="20" step="0.1">
+    </div>
+  </div>`;
+}
+
+function collectMemberForm() {
+  const g = id => document.getElementById(id);
+  return {
+    name: (g('mf-name').value||'').trim() || 'Member',
+    cash: parseFloat(g('mf-cash').value)||0,
+    otherAssets: parseFloat(g('mf-other-assets').value)||0,
+    liabilities: parseFloat(g('mf-liabilities').value)||0,
+    cpf: {
+      oa: parseFloat(g('mf-cpf-oa').value)||0,
+      sa: parseFloat(g('mf-cpf-sa').value)||0,
+      ma: parseFloat(g('mf-cpf-ma').value)||0
+    },
+    fireAnnualExpense: parseFloat(g('mf-fire-exp').value)||0,
+    fireReturnRate: parseFloat(g('mf-fire-rate').value)||4
+  };
+}
+
+function openAddMemberModal() {
+  openModal('Add Family Member', memberFormHTML(null), () => {
+    addMember(collectMemberForm());
+    closeModal(); renderAll();
+  });
+}
+function openEditMemberModal(id) {
+  const m = getMember(id); if (!m) return;
+  openModal('Edit Member', memberFormHTML(m), () => {
+    updateMember(id, collectMemberForm());
+    closeModal(); renderAll();
+  }, 'Update');
+}
+
+// ── HOLDING FORM ──────────────────────────────
+const TIP_YAHOO = tip('Full Yahoo Finance symbol. Examples: D05.SI (DBS on SGX), AAPL (Apple), 0700.HK (Tencent), VWRL.L (Vanguard FTSE All-World on LSE), VHY.AX (Vanguard AU on ASX).');
+
+function holdingFormHTML(type, h) {
+  const v = k => esc(h ? (h[k]||'') : '');
+  const n = k => h ? (h[k]||0) : 0;
+  const ccySelect = type === 'other' ? `
+    <div class="form-group">
+      <label class="form-label">Currency</label>
+      <select id="hf-currency" class="form-select">
+        ${CURRENCIES.map(c => `<option value="${c}"${h&&h.currency===c?' selected':''}>${CCY_LABEL[c]||c}</option>`).join('')}
+      </select>
+    </div>` : '';
+  return `<div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Symbol ${TIP_YAHOO}</label>
+      <input id="hf-ticker" class="form-input" value="${v('ticker')}" placeholder="${type==='sgx'?'e.g. D05.SI':type==='us'?'e.g. AAPL':'e.g. 0700.HK'}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name / Description</label>
+      <input id="hf-name" class="form-input" value="${v('name')}" placeholder="e.g. DBS Group Holdings">
+    </div>
+    ${ccySelect}
+    <div class="form-group">
+      <label class="form-label">Shares / Units</label>
+      <input id="hf-shares" type="number" class="form-input" value="${n('shares')}" min="0" step="any">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Avg Cost per Share</label>
+      <input id="hf-avg-cost" type="number" class="form-input" value="${n('avgCost')}" min="0" step="any">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Current Price <span class="text-muted text-xs">(leave 0 to use avg cost)</span></label>
+      <input id="hf-price" type="number" class="form-input" value="${n('currentPrice')}" min="0" step="any">
+    </div>
+  </div>`;
+}
+
+function collectHoldingForm(type) {
+  const g = id => document.getElementById(id);
+  const d = {
+    ticker: (g('hf-ticker').value||'').trim().toUpperCase(),
+    name:   (g('hf-name').value||'').trim(),
+    shares: parseFloat(g('hf-shares').value)||0,
+    avgCost: parseFloat(g('hf-avg-cost').value)||0,
+    currentPrice: parseFloat(g('hf-price').value)||0
+  };
+  if (type === 'other') d.currency = g('hf-currency').value || 'USD';
+  return d;
+}
+
+function openAddHoldingModal(type) {
+  const labels = {sgx:'SGX Holding',us:'US Holding',other:'Other Markets Holding'};
+  openModal('Add ' + (labels[type]||'Holding'), holdingFormHTML(type, null), () => {
+    addHolding(type, collectHoldingForm(type));
+    closeModal(); renderView();
+  });
+}
+function openEditHoldingModal(type, id) {
+  const m = getActiveMember(); if (!m) return;
+  const h = m[holdingsKey(type)].find(x => x.id === id); if (!h) return;
+  const labels = {sgx:'SGX Holding',us:'US Holding',other:'Other Markets Holding'};
+  openModal('Edit ' + (labels[type]||'Holding'), holdingFormHTML(type, h), () => {
+    updateHolding(type, id, collectHoldingForm(type));
+    closeModal(); renderView();
+  }, 'Update');
+}
+
+// ── SNAPSHOT ──────────────────────────────────
+function openSnapshotModal() {
+  const today = fmtDate(new Date());
+  openModal('Take Snapshot', `
+    <div class="form-group">
+      <label class="form-label">Snapshot Label</label>
+      <input id="snap-label" class="form-input" value="${today}" placeholder="e.g. Q1 2026 Review">
+    </div>
+    <p class="text-secondary text-sm mt-2">Captures net worth of all ${STATE.members.length} family member(s) right now.</p>
+  `, () => {
+    const label = (document.getElementById('snap-label').value||'').trim() || today;
+    takeSnapshot(label); closeModal();
+  }, 'Save Snapshot');
+}
+
+function takeSnapshot(label) {
+  const snap = {
+    id: uid(), date: new Date().toISOString(), label,
+    data: STATE.members.map(m => { const nw = computeNetWorth(m); return {memberId:m.id, memberName:m.name, ...nw}; })
+  };
+  STATE.history.unshift(snap);
+  saveHistory(); renderView();
+  showToast('Snapshot saved!', 'success');
+}
+
+function deleteSnapshot(id) {
+  STATE.history = STATE.history.filter(s => s.id !== id);
+  saveHistory(); renderView();
+}
+
+// ── LIVE PRICES ───────────────────────────────
+const CORS = 'https://corsproxy.io/?';
+async function fetchPrice(ticker) {
+  if (!ticker) return null;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  try {
+    const r = await fetch(CORS + encodeURIComponent(url));
+    if (!r.ok) return null;
+    const j = await r.json();
+    const price = j?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    return (price != null && price > 0) ? price : null;
+  } catch(e) { return null; }
+}
+
+async function refreshAllPrices(type) {
+  const m = getActiveMember(); if (!m) return;
+  const arr = m[holdingsKey(type)];
+  if (!arr.length) { showToast('No holdings to refresh.', 'info'); return; }
+  const btn = document.getElementById('refresh-btn-' + type);
+  if (btn) { btn.disabled = true; btn.textContent = '↻ Refreshing…'; }
+  let ok = 0;
+  for (const h of arr) {
+    const price = await fetchPrice(h.ticker);
+    if (price !== null) { h.currentPrice = price; h.lastRefreshed = new Date().toISOString(); ok++; }
+    await new Promise(r => setTimeout(r, 220));
+  }
+  saveMembers();
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Refresh Prices'; }
+  showToast(`Updated ${ok}/${arr.length} prices.`, ok > 0 ? 'success' : 'error');
+  renderView();
+}
+
+// ── AI ANALYSE ────────────────────────────────
+function composeAIPrompt() {
+  const lines = ['FAMILY WEALTH PORTFOLIO ANALYSIS REQUEST', `Generated: ${fmtDate(new Date())}`, ''];
+  lines.push('== FAMILY OVERVIEW ==');
+  STATE.members.forEach(m => {
+    const nw = computeNetWorth(m);
+    const f = computeFIRE(m);
+    lines.push(`\n--- ${m.name} ---`);
+    lines.push(`Net Worth (SGD): ${fmtSGD(nw.netWorth)}`);
+    if (m.sgxHoldings.length) {
+      lines.push('  SGX Holdings:');
+      m.sgxHoldings.forEach(h => { const cv = computeHolding(h,'sgx'); lines.push(`    ${h.ticker} (${h.name}): ${h.shares} shares @ avg ${fmtCcy(h.avgCost,'SGD')}, price ${fmtCcy(h.currentPrice||h.avgCost,'SGD')}, MV ${fmtSGD(cv.valueSGD)}, P&L ${fmtSGD(cv.pnlSGD)} (${fmtPct(cv.pnlPct)})`); });
+    }
+    if (m.usHoldings.length) {
+      lines.push(`  US Holdings (USD/SGD: ${STATE.fxRates.USD}):`);
+      m.usHoldings.forEach(h => { const cv = computeHolding(h,'us'); lines.push(`    ${h.ticker} (${h.name}): ${h.shares} shares @ avg ${fmtCcy(h.avgCost,'USD')}, price ${fmtCcy(h.currentPrice||h.avgCost,'USD')}, MV ${fmtSGD(cv.valueSGD)}, P&L ${fmtSGD(cv.pnlSGD)} (${fmtPct(cv.pnlPct)})`); });
+    }
+    if (m.otherHoldings.length) {
+      lines.push('  Other Markets Holdings:');
+      m.otherHoldings.forEach(h => { const cv = computeHolding(h,'other'); lines.push(`    ${h.ticker} (${h.name}) [${h.currency}]: ${h.shares} shares @ avg ${fmtCcy(h.avgCost,h.currency)}, price ${fmtCcy(h.currentPrice||h.avgCost,h.currency)}, MV ${fmtSGD(cv.valueSGD)}, P&L ${fmtSGD(cv.pnlSGD)} (${fmtPct(cv.pnlPct)})`); });
+    }
+    const cpf = m.cpf||{};
+    lines.push(`  CPF: OA=${fmtSGD(cpf.oa||0)}, SA=${fmtSGD(cpf.sa||0)}, MA=${fmtSGD(cpf.ma||0)}, Total=${fmtSGD(nw.cpfTotal)}`);
+    lines.push(`  Cash: ${fmtSGD(nw.cash)}, Other Assets: ${fmtSGD(nw.otherAssets)}, Liabilities: ${fmtSGD(nw.liabilities)}`);
+    if (f.fireNum > 0) lines.push(`  FIRE: Goal=${fmtSGD(f.fireNum)}, Annual Expense=${fmtSGD(f.expense)}, Progress=${fmtPct(f.pct,false)}, Gap=${fmtSGD(f.gap)}`);
+  });
+  lines.push('\n== FX RATES (per 1 unit → SGD) ==');
+  Object.entries(STATE.fxRates).forEach(([k,v]) => lines.push(`  ${k}/SGD: ${v}`));
+  lines.push('\n== ANALYSIS REQUEST ==');
+  lines.push('Please provide:\n1. Portfolio concentration and diversification risks\n2. Asset allocation assessment\n3. FIRE timeline evaluation and suggestions\n4. SGD currency risk (US/Other holdings)\n5. Singapore-specific optimisation opportunities (CPF, SRS, ETF domicile)\n6. Any red flags or notable observations');
+  return lines.join('\n');
+}
+
+function doAIAnalyse() {
+  if (STATE.members.length === 0) { showToast('Add members and holdings first.', 'info'); return; }
+  const prompt = composeAIPrompt();
+  openModal('AI Portfolio Analysis', `
+    <p class="text-secondary text-sm mb-3">Copy this prompt and paste it into Claude, ChatGPT, or Gemini for a detailed analysis.</p>
+    <textarea class="form-input" rows="14" readonly style="font-family:var(--font-m);font-size:0.72rem;line-height:1.5">${esc(prompt)}</textarea>
+  `, async () => {
+    try { await navigator.clipboard.writeText(prompt); showToast('Copied to clipboard!', 'success'); }
+    catch(e) { showToast('Select the text above and copy manually.', 'info'); }
+    closeModal();
+  }, '📋 Copy to Clipboard');
+}
+
+// ── WIZARD ────────────────────────────────────
+const WIZARD_STEPS = [
+  { title: 'Welcome', desc: 'Your all-in-one dashboard for tracking family wealth, investments, and the path to financial independence.' },
+  { title: 'Add Family Members', desc: 'Each person in your family gets their own portfolio — with separate SGX, US, and Other Markets holdings.' },
+  { title: 'Set FIRE Goals', desc: 'FIRE = Financial Independence, Retire Early. Set annual expenses and an expected return rate to track your progress.' },
+  { title: 'Track Your Holdings', desc: 'Add holdings across three markets. Use Yahoo Finance symbols for live price refresh.' },
+  { title: "You're All Set!", desc: 'Everything is stored locally in your browser. Take regular snapshots to track your wealth over time.' }
+];
+
+const WIZARD_BODY = [
+  `<div style="display:flex;flex-direction:column;gap:12px">
+    ${['📊 Track SGX, US, and global markets in one place','🔥 Monitor your FIRE progress and runway','👨‍👩‍👧 Compare net worth across the whole family','✦ AI-powered portfolio analysis prompts','📷 Historical snapshots to track progress over time'].map(f=>`<div style="display:flex;align-items:center;gap:10px;color:var(--text2)"><span style="color:var(--gold)">${f.split(' ')[0]}</span><span>${f.split(' ').slice(1).join(' ')}</span></div>`).join('')}
+  </div>`,
+  `<div style="color:var(--text2);font-size:0.88rem;line-height:1.7">
+    <p>Click <strong style="color:var(--text)">"Add Member"</strong> in the sidebar to add each person — yourself, your spouse, children, or any family member.</p>
+    <p class="mt-2">Each member has their own holdings, CPF balances, cash, and FIRE goal. You can switch between members anytime from the sidebar.</p>
+  </div>`,
+  `<div style="color:var(--text2);font-size:0.88rem;line-height:1.7">
+    <p>The classic <strong style="color:var(--gold)">4% Safe Withdrawal Rate</strong> means your FIRE Number = <strong style="color:var(--text)">Annual Expenses × 25</strong>.</p>
+    <p class="mt-2">For example: spending S$60,000/yr → FIRE Number of <strong style="color:var(--text)">S$1,500,000</strong>.</p>
+    <p class="mt-2">Set your annual expenses in each member's settings to see your FIRE progress bar.</p>
+  </div>`,
+  `<div style="color:var(--text2);font-size:0.88rem;line-height:1.7">
+    <p>Three holding sections: <strong style="color:var(--text)">SGX</strong> (Singapore), <strong style="color:var(--text)">US</strong> (NYSE/NASDAQ), <strong style="color:var(--text)">Other Markets</strong> (HK, LSE, Euronext, ASX, TSE…).</p>
+    <p class="mt-2">For live prices, enter the full <strong style="color:var(--gold)">Yahoo Finance symbol</strong>:</p>
+    <ul style="margin-top:8px;padding-left:16px;display:flex;flex-direction:column;gap:4px">
+      <li>SGX: <code style="color:var(--gold)">D05.SI</code> for DBS, <code style="color:var(--gold)">ES3.SI</code> for STI ETF</li>
+      <li>US: <code style="color:var(--gold)">AAPL</code>, <code style="color:var(--gold)">VTI</code>, <code style="color:var(--gold)">CSPX.L</code></li>
+      <li>HK: <code style="color:var(--gold)">0700.HK</code> for Tencent</li>
+      <li>LSE: <code style="color:var(--gold)">VWRL.L</code>, <code style="color:var(--gold)">VUAG.L</code></li>
+    </ul>
+  </div>`,
+  `<div style="display:flex;flex-direction:column;gap:12px">
+    ${['📷 Take regular snapshots to see your wealth grow over time','↻ Use "Refresh Prices" to fetch live prices from Yahoo Finance','✦ Click "AI Analyse" to get a detailed portfolio analysis prompt','? Look for the ? icons next to fields for helpful explanations','🌐 Set FX rates in Other Markets to keep SGD values current'].map(f=>`<div style="display:flex;align-items:flex-start;gap:10px;color:var(--text2);font-size:0.85rem"><span style="flex-shrink:0">${f.split(' ')[0]}</span><span>${f.split(' ').slice(1).join(' ')}</span></div>`).join('')}
+  </div>`
+];
+
+function showWizard() {
+  _wizardStep = 1;
+  document.getElementById('wizard-overlay').classList.add('open');
+  renderWizardStep();
+}
+function hideWizard() {
+  document.getElementById('wizard-overlay').classList.remove('open');
+  STATE.settings.wizardCompleted = true;
+  saveSettings();
+  renderAll();
+}
+
+function renderWizardStep() {
+  const s = WIZARD_STEPS[_wizardStep - 1];
+  document.getElementById('wiz-step-num').textContent = `Step ${_wizardStep} of ${WIZARD_STEPS.length}`;
+  document.getElementById('wiz-step-title').textContent = s.title;
+  document.getElementById('wiz-step-desc').textContent = s.desc;
+  document.getElementById('wiz-body').innerHTML = WIZARD_BODY[_wizardStep - 1];
+  document.getElementById('wiz-back').style.display = _wizardStep > 1 ? 'inline-flex' : 'none';
+  document.getElementById('wiz-next').textContent = _wizardStep === WIZARD_STEPS.length ? '🚀 Start Tracking' : 'Next →';
+  document.getElementById('wiz-skip').style.display = _wizardStep === WIZARD_STEPS.length ? 'none' : 'inline-flex';
+  // dots
+  const dots = Array.from({length: WIZARD_STEPS.length}, (_, i) => {
+    const cls = i + 1 === _wizardStep ? 'wizard-dot active' : i + 1 < _wizardStep ? 'wizard-dot done' : 'wizard-dot';
+    return `<div class="${cls}" data-action="wizard-goto" data-step="${i+1}"></div>`;
+  }).join('');
+  document.getElementById('wiz-dots').innerHTML = dots;
+}
+
+// ── TOAST ─────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── EVENT DELEGATION ──────────────────────────
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const { action, id, type, view, step, context } = el.dataset;
+  switch (action) {
+    case 'switch-view':    STATE.ui.activeView = view; renderAll(); break;
+    case 'switch-member':  STATE.ui.activeMemberId = id; STATE.settings.activeMemberId = id; saveSettings(); renderAll(); break;
+    case 'add-member':     openAddMemberModal(); break;
+    case 'edit-member':    e.stopPropagation(); openEditMemberModal(id); break;
+    case 'delete-member':  confirmModal(`Delete ${getMember(id)?.name||'member'}? This cannot be undone.`, () => { deleteMember(id); closeModal(); renderAll(); }); break;
+    case 'add-sgx':        openAddHoldingModal('sgx'); break;
+    case 'add-us':         openAddHoldingModal('us');  break;
+    case 'add-other':      openAddHoldingModal('other'); break;
+    case 'edit-holding':   openEditHoldingModal(type, id); break;
+    case 'delete-holding': confirmModal('Delete this holding? This cannot be undone.', () => { deleteHolding(type, id); closeModal(); renderView(); }); break;
+    case 'refresh-prices': refreshAllPrices(type); break;
+    case 'open-snapshot':  openSnapshotModal(); break;
+    case 'delete-snapshot': confirmModal('Delete this snapshot?', () => { deleteSnapshot(id); closeModal(); }); break;
+    case 'ai-analyse':     doAIAnalyse(); break;
+    case 'dismiss-hint':   dismissHint(context); break;
+    case 'show-wizard':    showWizard(); break;
+    case 'close-modal':    closeModal(); break;
+    case 'wizard-next':    _wizardStep < WIZARD_STEPS.length ? (++_wizardStep, renderWizardStep()) : hideWizard(); break;
+    case 'wizard-back':    _wizardStep > 1 && (--_wizardStep, renderWizardStep()); break;
+    case 'wizard-skip':    hideWizard(); break;
+    case 'wizard-goto':    _wizardStep = parseInt(step)||1; renderWizardStep(); break;
+    case 'modal-submit':
+    case 'submit-modal':   _modalSubmitFn && _modalSubmitFn(); break;
+  }
+});
+
+document.getElementById('modal-submit').addEventListener('click', () => _modalSubmitFn && _modalSubmitFn());
+
+document.addEventListener('input', function(e) {
+  if (e.target.classList.contains('fx-input')) {
+    const ccy = e.target.dataset.ccy;
+    const val = parseFloat(e.target.value);
+    if (ccy && !isNaN(val) && val > 0) {
+      debounce('fx-' + ccy, () => { STATE.fxRates[ccy] = val; saveFxRates(); renderView(); });
+    }
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── INIT ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadState();
+  renderAll();
+  if (!STATE.settings.wizardCompleted) showWizard();
+});
+// ═══════════════════════════════════════════════
+</script>
+</body>
+</html>
+
