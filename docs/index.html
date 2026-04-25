@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfomily — Marketing Screenshots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2128;
+  --bg4: #242936;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text2: #9aa0b8;
+  --text3: #6e7681;
+  --gold: #d4af37;
+  --green: #3fb950;
+  --red: #f85149;
+  --blue: #58a6ff;
+  --purple: #bc8cff;
+  --orange: #ffa657;
+  --pink: #e05588;
+  --font-d: 'Playfair Display', Georgia, serif;
+  --font-s: 'IBM Plex Sans', -apple-system, sans-serif;
+  --font-m: 'IBM Plex Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  background: #000;
+  color: var(--text);
+  font-family: var(--font-s);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+body {
+  background:
+    radial-gradient(ellipse at top left, rgba(212,175,55,0.08), transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(88,166,255,0.06), transparent 40%),
+    #000;
+  padding: 60px 20px 80px;
+}
+/* ── Page intro ── */
+.intro {
+  max-width: 900px;
+  margin: 0 auto 60px;
+  text-align: center;
+}
+.intro .brand {
+  font-family: var(--font-d);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.intro .tagline {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text2);
+  margin-bottom: 20px;
+}
+.intro .pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+.intro .pill {
+  border: 1px solid rgba(212,175,55,0.3);
+  background: rgba(212,175,55,0.08);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+/* ── Screenshot grid ── */
+.grid {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 50px 40px;
+  padding: 20px;
+}
+.shot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.shot-caption {
+  text-align: center;
+  max-width: 320px;
+}
+.shot-caption .num {
+  font-family: var(--font-m);
+  color: var(--gold);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.shot-caption h3 {
+  font-family: var(--font-d);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.shot-caption p {
+  color: var(--text2);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+/* ── iPhone frame ── */
+.phone {
+  width: 340px;
+  height: 720px;
+  background: #000;
+  border-radius: 48px;
+  padding: 12px;
+  position: relative;
+  box-shadow:
+    0 0 0 2px #2a2a2a,
+    0 0 0 3px #1a1a1a,
+    0 30px 60px rgba(0,0,0,0.6),
+    0 60px 120px rgba(212,175,55,0.08);
+}
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 22px; left: 50%;
+  transform: translateX(-50%);
+  width: 100px; height: 28px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 20;
+}
+.phone-screen {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  border-radius: 38px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+/* Status bar */
+.status-bar {
+  height: 38px;
+  background: var(--bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 28px 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.status-bar .right {
+  display: flex;
+  gap: 6px;
+  font-size: 0.65rem;
+  align-items: center;
+}
+/* Top nav inside phone */
+.p-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
+.p-topbar .hb {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.p-topbar .title {
+  font-family: var(--font-d);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.p-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 10px 10px 4px;
+  font-size: 0.7rem;
+}
+/* Bottom nav */
+.p-bottomnav {
+  display: flex;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 5px 3px 10px;
+  flex-shrink: 0;
+  z-index: 5;
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 1px;
+  color: var(--text3);
+  font-size: 0.54rem;
+  text-align: center;
+}
+.bn-item.active { color: var(--gold); }
+.bn-icon { font-size: 1rem; line-height: 1; }
+
+/* Shared content styles */
+.view-header h2 {
+font-family: var(--font-d);
+font-size: 1.15rem;
+color: var(--text);
+margin-bottom: 2px;
+}
+.view-header .muted {
+font-size: 0.62rem;
+color: var(--text3);
+}
+
+.stat-card-mini {
+background: var(--bg3);
+border: 1px solid var(--border);
+border-radius: 10px;
+padding: 10px;
+}
+.stat-label-mini {
+font-size: 0.55rem;
+color: var(--text3);
+text-transform: uppercase;
+letter-spacing: 0.04em;
+margin-bottom: 3px;
+}
+.stat-value-mini {
+font-family: var(--font-m);
+font-size: 1.05rem;
+font-weight: 600;
+color: var(--text);
+line-height: 1.15;
+}
+.stat-value-mini.big { color: var(--gold); font-size: 1.15rem; }
+.stat-sub-mini { font-size: 0.56rem; color: var(--text3); margin-top: 2px; }
+
+.card-mini {
+background: var(--bg3);
+border: 1px solid var(--border);
+border-radius: 10px;
+padding: 10px;
+}
+.card-title-mini {
+font-family: var(--font-d);
+font-size: 0.82rem;
+color: var(--text);
+margin-bottom: 8px;
+}
+
+/* Chart containers */
+.chart-box { width: 100%; height: 150px; position: relative; }
+
+/* Table */
+.mini-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.6rem;
+}
+.mini-table th {
+text-align: left;
+color: var(--text3);
+font-weight: 500;
+padding: 4px 3px;
+font-size: 0.5rem;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+border-bottom: 1px solid var(--border);
+}
+.mini-table td {
+padding: 5px 3px;
+border-bottom: 1px solid rgba(48,54,61,0.5);
+color: var(--text2);
+}
+.mini-table td.num { text-align: right; font-family: var(--font-m); }
+.mini-table .ticker-tag {
+display: inline-block;
+background: rgba(212,175,55,0.1);
+border: 1px solid rgba(212,175,55,0.3);
+color: var(--gold);
+padding: 1px 5px;
+border-radius: 3px;
+font-family: var(--font-m);
+font-size: 0.58rem;
+font-weight: 500;
+}
+.broker-tag {
+display: inline-block;
+background: rgba(88,166,255,0.1);
+border: 1px solid rgba(88,166,255,0.3);
+color: var(--blue);
+padding: 1px 4px;
+border-radius: 3px;
+font-size: 0.5rem;
+}
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+
+/* FIRE bar */
+.fire-bar {
+height: 14px;
+background: var(--bg4);
+border-radius: 7px;
+overflow: hidden;
+position: relative;
+margin: 6px 0;
+}
+.fire-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--gold), #f0c945);
+border-radius: 7px;
+}
+.fire-dual-row {
+display: grid;
+grid-template-columns: 1fr 1px 1fr;
+gap: 8px;
+margin: 6px 0;
+}
+.fire-dual-col { text-align: center; }
+.fire-dual-label {
+font-size: 0.52rem;
+color: var(--text3);
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+.fire-dual-value {
+font-family: var(--font-m);
+font-size: 1rem;
+font-weight: 600;
+color: var(--gold);
+}
+.fire-dual-value.faded { opacity: 0.6; color: var(--text); }
+.fire-dual-divider { background: var(--border); }
+
+/* Breakdown rows */
+.alloc-row {
+display: flex;
+align-items: center;
+gap: 6px;
+padding: 3px 0;
+font-size: 0.62rem;
+color: var(--text2);
+}
+.alloc-row .dot {
+width: 6px; height: 6px;
+border-radius: 50%;
+flex-shrink: 0;
+}
+.alloc-row .lbl { flex: 1; }
+.alloc-row .val {
+font-family: var(--font-m);
+color: var(--text);
+}
+.alloc-row .pct {
+color: var(--text3);
+font-size: 0.56rem;
+width: 38px;
+text-align: right;
+}
+
+/* Member list */
+.member-row {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 7px 8px;
+border-radius: 8px;
+margin-bottom: 4px;
+}
+.member-row.active {
+background: rgba(212,175,55,0.08);
+border-left: 2px solid var(--gold);
+}
+.member-avatar {
+width: 24px; height: 24px;
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-weight: 600;
+font-size: 0.7rem;
+color: #000;
+flex-shrink: 0;
+}
+.member-name {
+font-size: 0.75rem;
+color: var(--text);
+font-weight: 500;
+}
+.member-nw {
+font-family: var(--font-m);
+font-size: 0.6rem;
+color: var(--text3);
+}
+
+/* Focus card */
+.focus-card-mini {
+background: linear-gradient(145deg, var(--bg3), var(--bg2));
+border: 1px solid var(--border);
+border-radius: 10px;
+padding: 11px;
+position: relative;
+overflow: hidden;
+}
+.focus-card-mini::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: linear-gradient(90deg, var(--orange), var(--gold));
+}
+.focus-label-mini {
+font-size: 0.52rem;
+color: var(--text3);
+text-transform: uppercase;
+letter-spacing: 0.06em;
+margin-bottom: 6px;
+}
+.focus-value-mini {
+font-family: var(--font-d);
+font-size: 1.25rem;
+font-weight: 600;
+color: var(--gold);
+}
+.focus-sub-mini {
+font-size: 0.54rem;
+color: var(--text3);
+margin-top: 2px;
+}
+
+/* Property row */
+.prop-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px 0;
+border-bottom: 1px solid rgba(48,54,61,0.4);
+font-size: 0.64rem;
+}
+.prop-name { color: var(--text); font-weight: 500; }
+.prop-meta { color: var(--text3); font-size: 0.56rem; margin-top: 1px; }
+.prop-equity { font-family: var(--font-m); color: var(--gold); font-weight: 600; }
+
+/* Expense row */
+.exp-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 7px 0;
+border-bottom: 1px solid rgba(48,54,61,0.3);
+font-size: 0.62rem;
+}
+.exp-cat { color: var(--text3); font-size: 0.54rem; }
+.exp-amt { font-family: var(--font-m); color: var(--text); }
+.freq-badge-mini {
+display: inline-block;
+padding: 1px 5px;
+border-radius: 3px;
+font-size: 0.48rem;
+}
+.freq-recurring-mini {
+background: rgba(248,81,73,0.12);
+border: 1px solid rgba(248,81,73,0.3);
+color: var(--red);
+}
+.freq-onetime-mini {
+background: rgba(139,148,158,0.12);
+color: var(--text2);
+}
+
+/* Category bar */
+.cat-bar {
+display: flex;
+align-items: center;
+gap: 5px;
+margin-bottom: 4px;
+font-size: 0.56rem;
+}
+.cat-bar-lbl { width: 58px; color: var(--text2); }
+.cat-bar-track {
+flex: 1; height: 9px;
+background: var(--bg4);
+border-radius: 3px;
+overflow: hidden;
+}
+.cat-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--gold), #e0b030);
+border-radius: 3px;
+}
+.cat-bar-val { width: 50px; text-align: right; font-family: var(--font-m); color: var(--text); }
+
+.section-gap-mini { margin-bottom: 10px; }
+.scroll-hide::-webkit-scrollbar { display: none; }
+.scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Footer */
+footer {
+max-width: 900px;
+margin: 60px auto 0;
+text-align: center;
+color: var(--text3);
+font-size: 0.8rem;
+}
+footer a { color: var(--gold); text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 900px) {
+.grid { grid-template-columns: 1fr; gap: 40px; }
+.phone { width: 300px; height: 640px; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="intro">
+  <div class="brand">Portfomily</div>
+  <div class="tagline">Family wealth tracker with portfolio, expense tracking & FIRE calculator<br>— runs 100% in your browser. Your data never leaves your device.</div>
+  <div class="pills">
+    <span class="pill">🇸🇬 Singapore-built</span>
+    <span class="pill">🔒 Private by design</span>
+    <span class="pill">💸 Free forever</span>
+    <span class="pill">📱 Works on any device</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- ═══════════ SHOT 1: DASHBOARD ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">Dashboard</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2>Alex's Dashboard</h2>
+            <div class="muted">As of 24 Apr 2026</div>
+          </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" class="section-gap-mini">
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Net Worth</div>
+          <div class="stat-value-mini big">S$2.85M</div>
+          <div class="stat-sub-mini">Assets minus liabilities</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Liquid Assets</div>
+          <div class="stat-value-mini" style="color:var(--orange)">S$685K</div>
+          <div class="stat-sub-mini">24% of net worth</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Invested</div>
+          <div class="stat-value-mini">S$412K</div>
+          <div class="stat-sub-mini">SGX + US + Global</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Unrealised P&amp;L</div>
+          <div class="stat-value-mini pos">+S$48,320</div>
+          <div class="stat-sub-mini">+13.3% on cost</div>
+        </div>
+      </div>
+
+      <div class="stat-card-mini section-gap-mini">
+        <div class="stat-label-mini">🔥 FIRE Progress</div>
+        <div class="fire-dual-row">
+          <div class="fire-dual-col">
+            <div class="fire-dual-label">💧 Liquid</div>
+            <div class="fire-dual-value">38.1%</div>
+          </div>
+          <div class="fire-dual-divider"></div>
+          <div class="fire-dual-col">
+            <div class="fire-dual-label">Total NW</div>
+            <div class="fire-dual-value faded">158.3%</div>
+          </div>
+        </div>
+        <div class="stat-sub-mini" style="text-align:center">of S$1.8M goal</div>
+      </div>
+
+      <div class="card-mini">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div class="card-title-mini" style="margin:0">Asset Allocation</div>
+          <div style="display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1px;font-size:0.52rem;gap:1px">
+            <div style="background:var(--gold);color:#000;padding:2px 6px;border-radius:3px;font-weight:600">GROSS</div>
+            <div style="color:var(--text3);padding:2px 6px">NET</div>
+          </div>
+        </div>
+        <div class="chart-box" style="height:130px"><canvas id="chart1"></canvas></div>
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item active"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">01 · Dashboard</div>
+  <h3>See your whole wealth at a glance</h3>
+  <p>Net worth, liquid assets, FIRE progress — all on one screen. Liquid % is the honest retirement number, not inflated by property equity.</p>
+</div>
+
+  </div>
+
+  <!-- ═══════════ SHOT 2: SGX HOLDINGS ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">SGX Holdings</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2 style="font-size:1.05rem">🇸🇬 SGX Holdings</h2>
+            <div class="muted">Singapore Exchange — prices in SGD</div>
+          </div>
+
+      <div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+        <div style="background:var(--gold);color:#000;padding:4px 8px;border-radius:4px;font-size:0.6rem;font-weight:600">+ Add</div>
+        <div style="border:1px solid var(--border);padding:4px 8px;border-radius:4px;font-size:0.58rem;color:var(--text2)">↻ Refresh Prices</div>
+        <div style="border:1px solid var(--border);padding:3px 7px;border-radius:4px;font-size:0.54rem;color:var(--text2)">All Brokers (6) ▾</div>
+      </div>
+
+      <div class="card-mini" style="padding:0">
+        <table class="mini-table">
+          <thead>
+            <tr><th>Symbol</th><th>Name</th><th>Broker</th><th class="num">Value</th><th class="num">P&amp;L</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="ticker-tag">D05.SI</span></td>
+              <td>DBS Group</td>
+              <td><span class="broker-tag">DBS V.</span></td>
+              <td class="num">S$48,320</td>
+              <td class="num pos">+12.4%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">O39.SI</span></td>
+              <td>OCBC Bank</td>
+              <td><span class="broker-tag">IBKR</span></td>
+              <td class="num">S$28,150</td>
+              <td class="num pos">+8.9%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">U11.SI</span></td>
+              <td>UOB</td>
+              <td><span class="broker-tag">Tiger</span></td>
+              <td class="num">S$22,800</td>
+              <td class="num pos">+5.3%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">C38U.SI</span></td>
+              <td>CICT REIT</td>
+              <td><span class="broker-tag">DBS V.</span></td>
+              <td class="num">S$14,500</td>
+              <td class="num neg">−2.1%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">S58.SI</span></td>
+              <td>SATS Ltd</td>
+              <td><span class="broker-tag">POEMS</span></td>
+              <td class="num">S$18,900</td>
+              <td class="num pos">+21.7%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">Z74.SI</span></td>
+              <td>Singtel</td>
+              <td><span class="broker-tag">IBKR</span></td>
+              <td class="num">S$16,200</td>
+              <td class="num pos">+6.8%</td>
+            </tr>
+            <tr>
+              <td><span class="ticker-tag">9CI.SI</span></td>
+              <td>CapitaLand Inv</td>
+              <td><span class="broker-tag">DBS V.</span></td>
+              <td class="num">S$11,400</td>
+              <td class="num neg">−1.5%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;padding:8px;font-size:0.6rem;background:var(--bg4);border-top:1px solid var(--gold)">
+          <span style="color:var(--gold);font-weight:600">Total</span>
+          <span class="pos" style="font-family:var(--font-m);font-weight:600">+S$16,784 (+9.2%)</span>
+        </div>
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item active"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">02 · Portfolio</div>
+  <h3>Every broker, every market, one view</h3>
+  <p>Track SGX, US, HK, LSE holdings with auto-price lookup. Filter by broker when you hold the same ticker across IBKR, Tiger, DBS Vickers.</p>
+</div>
+
+  </div>
+
+  <!-- ═══════════ SHOT 3: FIRE TRACKER ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">FIRE Tracker</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2 style="font-size:1.1rem">🔥 FIRE Analysis</h2>
+            <div class="muted">Multi-scenario retirement readiness</div>
+          </div>
+
+      <div class="card-mini section-gap-mini">
+        <div style="text-align:center;padding:4px 0">
+          <div class="stat-sub-mini" style="margin-bottom:4px">Target: S$72K/yr × 25</div>
+          <div style="display:flex;justify-content:space-around;gap:12px">
+            <div>
+              <div class="stat-label-mini">25× (4% SWR)</div>
+              <div style="font-family:var(--font-d);font-size:1.2rem;color:var(--gold);font-weight:600">S$1.8M</div>
+            </div>
+            <div>
+              <div class="stat-label-mini">33× (3% SWR)</div>
+              <div style="font-family:var(--font-d);font-size:1.2rem;color:var(--blue);font-weight:600">S$2.4M</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-mini section-gap-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">💧 Scenario: Liquid Only</div>
+        <div style="display:flex;justify-content:space-between;font-size:0.56rem;color:var(--text3);margin-top:4px">
+          <span>S$0</span>
+          <span style="font-weight:600">38.1% of 25× target</span>
+          <span>S$1.8M</span>
+        </div>
+        <div class="fire-bar"><div class="fire-bar-fill" style="width:38%"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+          <div><div class="stat-label-mini">Liquid</div><div style="font-family:var(--font-m);font-size:0.78rem;color:var(--text);font-weight:600">S$685K</div></div>
+          <div><div class="stat-label-mini">4% SWR / mo</div><div style="font-family:var(--font-m);font-size:0.78rem;color:var(--gold);font-weight:600">S$2,283</div></div>
+        </div>
+      </div>
+
+      <div class="card-mini section-gap-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">🏢 Scenario: Post Sale of Inv. Property</div>
+        <div style="display:flex;justify-content:space-between;font-size:0.56rem;color:var(--text3);margin-top:4px">
+          <span>S$0</span>
+          <span style="font-weight:600;color:var(--green)">112% ✓ FIRE</span>
+          <span>S$1.8M</span>
+        </div>
+        <div class="fire-bar"><div class="fire-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div style="font-size:0.56rem;color:var(--text3);margin-top:4px">Includes S$1.35M equity from investment property</div>
+      </div>
+
+      <div class="card-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">💰 Monthly Passive Income</div>
+        <div style="display:flex;justify-content:space-between;padding:3px 0;font-size:0.62rem;border-bottom:1px solid var(--border)"><span>4% SWR on liquid</span><span style="font-family:var(--font-m);color:var(--gold)">S$2,283</span></div>
+        <div style="display:flex;justify-content:space-between;padding:3px 0;font-size:0.62rem;border-bottom:1px solid var(--border)"><span>Est. dividends (3.5%)</span><span style="font-family:var(--font-m);color:var(--gold)">S$1,202</span></div>
+        <div style="display:flex;justify-content:space-between;padding:3px 0;font-size:0.62rem;border-bottom:1px solid var(--border)"><span>Property rental (net)</span><span style="font-family:var(--font-m);color:var(--gold)">S$1,850</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.66rem;font-weight:600;background:var(--bg4);margin:4px -10px -10px;padding:6px 10px;border-radius:0 0 10px 10px"><span style="color:var(--gold)">Total</span><span style="font-family:var(--font-m);color:var(--gold)">S$4,133 / mo</span></div>
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item active"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">03 · FIRE</div>
+  <h3>Know exactly when you can retire</h3>
+  <p>Two scenarios, two SWR rates, honest numbers. See liquid-only FIRE vs post-property-sale, plus monthly passive income from dividends + rental.</p>
+</div>
+
+  </div>
+
+  <!-- ═══════════ SHOT 4: CASH & EXPENSES ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">Cash &amp; Expenses</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2 style="font-size:1.05rem">💵 Cash &amp; Expenses</h2>
+            <div class="muted">Savings accounts + spending tracker</div>
+          </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" class="section-gap-mini">
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Total Cash</div>
+          <div class="stat-value-mini big">S$128K</div>
+          <div class="stat-sub-mini">5 accounts</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Est. Interest</div>
+          <div class="stat-value-mini" style="color:var(--green)">S$4,820</div>
+          <div class="stat-sub-mini">3.77% blended</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Monthly Burn</div>
+          <div class="stat-value-mini" style="color:var(--red)">S$5,840</div>
+          <div class="stat-sub-mini">S$70K / yr</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Cash Runway</div>
+          <div class="stat-value-mini">21.9 mo</div>
+          <div class="stat-sub-mini">~1.8 yrs</div>
+        </div>
+      </div>
+
+      <div class="card-mini section-gap-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">🏦 Savings Accounts</div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.6rem;border-bottom:1px solid var(--border)">
+          <div><div style="color:var(--text);font-weight:500">DBS Multiplier</div><div style="color:var(--text3);font-size:0.52rem">DBS · Savings · 4.1%</div></div>
+          <div style="font-family:var(--font-m);color:var(--gold);font-weight:600">S$52,000</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.6rem;border-bottom:1px solid var(--border)">
+          <div><div style="color:var(--text);font-weight:500">OCBC 360</div><div style="color:var(--text3);font-size:0.52rem">OCBC · Savings · 4.65%</div></div>
+          <div style="font-family:var(--font-m);color:var(--gold);font-weight:600">S$38,500</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.6rem;border-bottom:1px solid var(--border)">
+          <div><div style="color:var(--text);font-weight:500">SC FD (6mo)</div><div style="color:var(--text3);font-size:0.52rem">StanChart · Fixed · 3.40%</div></div>
+          <div style="font-family:var(--font-m);color:var(--gold);font-weight:600">S$30,000</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.6rem">
+          <div><div style="color:var(--text);font-weight:500">GXS Savings</div><div style="color:var(--text3);font-size:0.52rem">GXS · Savings · 2.5%</div></div>
+          <div style="font-family:var(--font-m);color:var(--gold);font-weight:600">S$7,500</div>
+        </div>
+      </div>
+
+      <div class="card-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">📊 Spending by Category</div>
+        <div class="cat-bar">
+          <div class="cat-bar-lbl">Housing</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:85%"></div></div>
+          <div class="cat-bar-val">S$2.4K</div>
+        </div>
+        <div class="cat-bar">
+          <div class="cat-bar-lbl">Food</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:48%"></div></div>
+          <div class="cat-bar-val">S$1.3K</div>
+        </div>
+        <div class="cat-bar">
+          <div class="cat-bar-lbl">Transport</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:28%"></div></div>
+          <div class="cat-bar-val">S$780</div>
+        </div>
+        <div class="cat-bar">
+          <div class="cat-bar-lbl">Childcare</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:22%"></div></div>
+          <div class="cat-bar-val">S$620</div>
+        </div>
+        <div class="cat-bar">
+          <div class="cat-bar-lbl">Subscriptions</div>
+          <div class="cat-bar-track"><div class="cat-bar-fill" style="width:10%"></div></div>
+          <div class="cat-bar-val">S$290</div>
+        </div>
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item active"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">04 · Cash &amp; Spending</div>
+  <h3>Every savings account, every expense</h3>
+  <p>Track DBS Multiplier, OCBC 360, fixed deposits, digital banks. Log recurring expenses. See your real monthly burn and cash runway.</p>
+</div>
+
+  </div>
+
+  <!-- ═══════════ SHOT 5: PROPERTIES ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">Properties</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2 style="font-size:1.1rem">🏠 Properties</h2>
+            <div class="muted">Ownership share, equity &amp; cash flow</div>
+          </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" class="section-gap-mini">
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Total Value</div>
+          <div class="stat-value-mini big">S$3.4M</div>
+          <div class="stat-sub-mini">Your share</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Mortgage</div>
+          <div class="stat-value-mini" style="color:var(--red)">S$1.2M</div>
+          <div class="stat-sub-mini">Outstanding</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Net Equity</div>
+          <div class="stat-value-mini" style="color:var(--gold)">S$2.2M</div>
+          <div class="stat-sub-mini">Value − mortgage</div>
+        </div>
+        <div class="stat-card-mini">
+          <div class="stat-label-mini">Cash Flow</div>
+          <div class="stat-value-mini" style="color:var(--green)">+S$1,850</div>
+          <div class="stat-sub-mini">Per month</div>
+        </div>
+      </div>
+
+      <div class="card-mini">
+        <div class="prop-row">
+          <div>
+            <div class="prop-name">🏡 Bukit Timah Condo</div>
+            <div class="prop-meta">Primary Home · Jointly owned 50%</div>
+          </div>
+          <div style="text-align:right">
+            <div class="prop-equity">S$850K</div>
+            <div class="prop-meta">equity (your share)</div>
+          </div>
+        </div>
+        <div class="prop-row">
+          <div>
+            <div class="prop-name">🏢 Punggol Condo</div>
+            <div class="prop-meta">Investment · 100% · Rented</div>
+          </div>
+          <div style="text-align:right">
+            <div class="prop-equity">S$1.35M</div>
+            <div class="prop-meta">+S$1,850/mo net</div>
+          </div>
+        </div>
+        <div class="prop-row" style="border:none">
+          <div>
+            <div class="prop-name">🏖 Penang Apartment</div>
+            <div class="prop-meta">Vacation · 100% · MYR property</div>
+          </div>
+          <div style="text-align:right">
+            <div class="prop-equity">S$0</div>
+            <div class="prop-meta">fully paid</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:8px 10px;margin-top:10px;font-size:0.58rem;color:var(--text2);line-height:1.5">
+        💡 <strong style="color:var(--gold)">Smart tracking:</strong> Joint ownership is automatically scaled. CPF deployed is tracked separately to avoid double-counting with your CPF OA balance.
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item active"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">05 · Property</div>
+  <h3>Primary home + investment, separated</h3>
+  <p>Handle joint ownership, CPF deployed, rental cash flow. Primary home is excluded from FIRE calcs — because you can't sell where you live.</p>
+</div>
+
+  </div>
+
+  <!-- ═══════════ SHOT 6: FAMILY ═══════════ -->
+
+  <div class="shot">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div>9:41</div>
+          <div class="right"><span>•••</span><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="p-topbar">
+          <div class="hb">☰</div>
+          <div class="title">Family Wealth</div>
+          <div class="hb">👨‍👩‍👧</div>
+        </div>
+        <div class="p-content scroll-hide" style="overflow-y: auto">
+          <div class="view-header section-gap-mini" style="padding: 4px 2px 8px">
+            <h2 style="font-size:1.1rem">👨‍👩‍👧 Family Wealth</h2>
+            <div class="muted">Combined view across all members</div>
+          </div>
+
+      <div class="focus-card-mini section-gap-mini">
+        <div class="focus-label-mini">Family Net Worth</div>
+        <div class="focus-value-mini">S$4.62M</div>
+        <div class="focus-sub-mini">3 members · 70.4% of S$6.6M combined FIRE target</div>
+      </div>
+
+      <div class="card-mini section-gap-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">Members</div>
+        <div class="member-row active">
+          <div class="member-avatar" style="background:#d4af37">A</div>
+          <div style="flex:1">
+            <div class="member-name">Alex</div>
+            <div class="member-nw">S$2.85M · 158% of FIRE</div>
+          </div>
+        </div>
+        <div class="member-row">
+          <div class="member-avatar" style="background:#58a6ff">S</div>
+          <div style="flex:1">
+            <div class="member-name">Sarah</div>
+            <div class="member-nw">S$1.42M · 118% of FIRE</div>
+          </div>
+        </div>
+        <div class="member-row">
+          <div class="member-avatar" style="background:#bc8cff">E</div>
+          <div style="flex:1">
+            <div class="member-name">Emma (age 8)</div>
+            <div class="member-nw">S$58K · Education fund</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-mini">
+        <div class="card-title-mini" style="font-size:0.72rem">Breakdown by Asset Class</div>
+        <div class="chart-box" style="height:120px"><canvas id="chart6"></canvas></div>
+      </div>
+    </div>
+    <div class="p-bottomnav">
+      <div class="bn-item"><span class="bn-icon">◈</span><span>Dashboard</span></div>
+      <div class="bn-item active"><span class="bn-icon">👨‍👩‍👧</span><span>Family</span></div>
+      <div class="bn-item"><span class="bn-icon">🇸🇬</span><span>SGX</span></div>
+      <div class="bn-item"><span class="bn-icon">🇺🇸</span><span>US</span></div>
+      <div class="bn-item"><span class="bn-icon">🔥</span><span>FIRE</span></div>
+      <div class="bn-item"><span class="bn-icon">☰</span><span>More</span></div>
+    </div>
+  </div>
+</div>
+<div class="shot-caption">
+  <div class="num">06 · Family</div>
+  <h3>Everyone's wealth in one household view</h3>
+  <p>Track each family member separately — spouse, kids' education funds — then compare side-by-side. Your family's full financial picture.</p>
+</div>
+
+  </div>
+
+</div>
+
+<footer>
+  <p>Share these screenshots anywhere. <a href="https://portfomily.netlify.app" target="_blank">Try Portfomily →</a></p>
+  <p style="margin-top:8px;font-size:0.7rem;opacity:0.6">Portfomily v1.0.1 · Built in Singapore · 100% browser-based · Your data never leaves your device</p>
+</footer>
+
+<script>
+// Chart 1 — Dashboard donut (gross view with striped mortgage)
+const ctx1 = document.getElementById('chart1').getContext('2d');
+function stripePattern(base, stripe) {
+  const c = document.createElement('canvas');
+  c.width = 10; c.height = 10;
+  const p = c.getContext('2d');
+  p.fillStyle = base; p.fillRect(0,0,10,10);
+  p.strokeStyle = stripe; p.lineWidth = 2;
+  p.beginPath();
+  p.moveTo(-2,12); p.lineTo(12,-2);
+  p.moveTo(3,12); p.lineTo(12,3);
+  p.moveTo(-2,7); p.lineTo(7,-2);
+  p.stroke();
+  return p.createPattern(c, 'repeat');
+}
+new Chart(ctx1, {
+  type: 'doughnut',
+  data: {
+    labels: ['SGX','US','Global','CPF','SRS','Cash','Prop. Equity','Prop. Mortgage'],
+    datasets: [{
+      data: [168000, 180000, 64000, 294000, 62000, 128000, 2050000, 1200000],
+      backgroundColor: [
+        '#d4af37','#58a6ff','#bc8cff','#3fb950','#56d364','#ffa657','#e05588',
+        stripePattern('#e05588','rgba(255,255,255,0.35)')
+      ],
+      borderWidth: 1, borderColor: '#1c2128'
+    }]
+  },
+  options: {
+    cutout: '64%',
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: { color: '#9aa0b8', font: { size: 9 }, padding: 6, boxWidth: 8, boxHeight: 8 }
+      },
+      tooltip: { enabled: false }
+    },
+    animation: { animateRotate: true, duration: 1200 }
+  }
+});
+
+// Chart 6 — Family stacked bar
+const ctx6 = document.getElementById('chart6').getContext('2d');
+new Chart(ctx6, {
+  type: 'bar',
+  data: {
+    labels: ['Alex','Sarah','Emma'],
+    datasets: [
+      { label: 'SGX', data: [168, 95, 12], backgroundColor: '#d4af37', stack: 'a' },
+      { label: 'US',  data: [180, 140, 28], backgroundColor: '#58a6ff', stack: 'a' },
+      { label: 'CPF', data: [294, 220, 0], backgroundColor: '#3fb950', stack: 'a' },
+      { label: 'Cash',data: [128, 85, 18], backgroundColor: '#ffa657', stack: 'a' },
+      { label: 'Prop', data: [2080, 880, 0], backgroundColor: '#e05588', stack: 'a' }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    scales: {
+      x: { stacked: true, ticks: { color: '#6e7681', font: { size: 8 }, callback: v => '$' + v + 'K' }, grid: { color: '#30363d' } },
+      y: { stacked: true, ticks: { color: '#e6edf3', font: { size: 9 } }, grid: { display: false } }
+    },
+    plugins: {
+      legend: { labels: { color: '#9aa0b8', font: { size: 8 }, boxWidth: 8, boxHeight: 8, padding: 4 }, position: 'bottom' },
+      tooltip: { enabled: false }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
