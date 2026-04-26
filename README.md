@@ -2,7 +2,7 @@
 
 > Track your family's net worth, investments, property, CPF, and FIRE progress — all in one place. Runs 100% in your browser. Your data never leaves your device.
 
-**[🚀 Try it live →](https://portfomily.netlify.app/)**  &nbsp;|&nbsp; **[GitHub Pages →](https://anduslim.github.io/Portfomily/)**
+**[🚀 Try it live →](https://portfomily.netlify.app/)**  &nbsp;|&nbsp; **[GitHub Pages →](https://anduslim.github.io/Portfomily/FamilyWealthTracker.html)**  &nbsp;|&nbsp; **[Marketing page →](https://anduslim.github.io/Portfomily/)**
 
 ---
 
