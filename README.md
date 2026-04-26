@@ -40,7 +40,7 @@ Portfomily is a single-file personal finance app built for Singapore families. N
 
 ## Getting started
 
-1. Open [portfomily.netlify.app](https://portfomily.netlify.app/) **or** download `FamilyWealthTracker.html` and open it in any browser
+1. Open [portfomily.netlify.app](https://portfomily.netlify.app/) **or** download `docs/FamilyWealthTracker.html` and open it in any browser
 2. Complete the onboarding wizard (or skip it)
 3. Add a family member → set CPF balances, cash, and FIRE goal
 4. Add holdings — ticker symbols follow Yahoo Finance convention:
@@ -62,7 +62,7 @@ python3 -m http.server 8080
 npx serve .
 ```
 
-Or drag `FamilyWealthTracker.html` straight into your browser.
+Or drag `docs/FamilyWealthTracker.html` straight into your browser.
 
 ---
 
